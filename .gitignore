@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+trading_bot_env/
+venv/
+env/
+ENV/
+
+# Environment variables (CRITICAL - NU COMMIT!)
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+data/logs/
+
+# Data files
+data/historical/*.csv
+data/backtests/*.csv
+data/backtests/*.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
