@@ -80,7 +80,10 @@ def is_market_hours(dt: Optional[datetime] = None, timezone_str: str = "America/
         dt = datetime.now(timezone.utc)
     
     # Convertește la timezone-ul pieței
-    market_tz = pd.Timestamp(dt, tz=timezone.utc).tz_convert(timezone_str)
+    if dt.tzinfo is None:
+        market_tz = pd.Timestamp(dt).tz_localize('UTC').tz_convert(timezone_str)
+    else:
+        market_tz = pd.Timestamp(dt).tz_convert(timezone_str)
     
     # Verifică dacă este weekday (luni-vineri)
     if market_tz.weekday() >= 5:  # Sâmbătă = 5, Duminică = 6

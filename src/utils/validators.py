@@ -2,7 +2,7 @@
 Validators - Validare input și date
 """
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 from pathlib import Path
 
 
