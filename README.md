@@ -49,25 +49,30 @@ python src/main.py --mode paper --config config/config.yaml
 
 ## 📁 Structură Proiect
 
+Arhitectură modulară pe straturi funcționale. Vezi [ARCHITECTURE.md](ARCHITECTURE.md) pentru detalii complete.
+
 ```
 trading_bot/
 │
-├── config/
-│   ├── config.yaml              # Configurație generală
-│   ├── strategy_params.yaml      # Parametri strategie
-│   └── risk_params.yaml          # Parametri risc
+├── config/                       # Configurație (YAML)
+│   ├── config.yaml
+│   ├── strategy_params.yaml
+│   └── risk_params.yaml
 │
 ├── src/
-│   ├── main.py                  # Entry point principal
-│   ├── broker/                  # Conexiune IBKR
+│   ├── main.py                  # Entry point - orchestrator
+│   ├── models/                  # Entități de date (DTOs)
+│   ├── broker/                  # Infrastructură I/O (IBKR)
 │   ├── strategy/                # Logică trading
 │   ├── risk/                    # Management risc
+│   ├── services/                # Servicii de orchestrare
 │   ├── backtest/                # Backtesting
+│   ├── storage/                 # Persistență (Repository)
 │   ├── logging_utils/           # Logging
 │   └── utils/                   # Utilitare
 │
 ├── data/
-│   ├── historical/              # Date istorice
+│   ├── historical/              # Date istorice (CSV)
 │   ├── backtests/               # Rezultate backtests
 │   └── logs/                    # Log-uri
 │
@@ -75,6 +80,12 @@ trading_bot/
 ├── requirements.txt             # Dependențe Python
 └── README.md                    # Acest fișier
 ```
+
+### 🎯 Principii de Design
+- **Separarea responsabilităților** - Fiecare modul are scop clar
+- **Dependency Injection** - Comunicare prin interfețe
+- **DRY** - Cod comun în `utils/` sau clase de bază
+- **Testabilitate** - Module independente, mock-uibile
 
 ---
 
