@@ -1,0 +1,37 @@
+app:
+  mode: paper  # backtest, paper, live
+  debug: true
+
+ibkr:
+  host: 127.0.0.1
+  port: 7497
+  clientId: 1
+  paper: true  # false pt. live account
+
+symbols:
+  - AAPL
+  - MSFT
+  - AMD
+
+strategy:
+  timeframe: "1H"         # 1H, 4H, 1D
+  ema_short: 20
+  ema_long: 50
+  volume_threshold: 1.5   # 1.5x volum mediu
+
+exits:
+  take_profit_pct: 2.0    # 2% TP
+  stop_loss_pct: 0.8      # 0.8% SL
+  no_overnight: true      # Fără poziții peste noapte
+
+risk:
+  capital_initial: 500
+  max_risk_per_trade: 0.20  # 20%
+  max_positions: 1
+  use_leverage: false
+  daily_loss_limit: 0.05    # 5% pierdere zilnică = stop
+  max_trades_per_day: 10
+
+logging:
+  level: INFO
+  file: data/logs/trading.log
