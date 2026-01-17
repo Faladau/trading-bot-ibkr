@@ -1286,6 +1286,15 @@ cat ../strategy_engine/output/AAPL_signals.json
 
 ---
 
+### 11.1 Scop Dashboard
+- Status agenți live (Agent 1,2,3)
+- Live data (din Agent 1 CSV)
+- Poziții active + PnL
+- Metrics 24h (winrate, drawdown)
+- Controls (start/stop, config)
+- Logs realtime
+- Deploy GRATUIT Streamlit Cloud
+
 ## CONCLUZIE
 
 **Agentul 1 este ultra-granular și ready for Cursor implementation.**

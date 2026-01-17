@@ -1,0 +1,2 @@
+# System packages pentru Streamlit Cloud
+# Nu e necesar pentru majoritatea proiectelor, dar poți adăuga aici dacă ai nevoie
