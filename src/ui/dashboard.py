@@ -35,6 +35,7 @@ st.set_page_config(
 load_css()
 
 # CSS suplimentar inline pentru a forța layout-ul după refresh
+# Folosim multiple selectori și !important pentru a suprascrie Streamlit
 st.markdown("""
 <style>
     /* Force layout 80% - aplicat după load_css pentru a suprascrie */
@@ -43,15 +44,28 @@ st.markdown("""
         margin-left: auto !important;
         margin-right: auto !important;
         padding: 2rem !important;
+        width: 80% !important;
     }
     .main .block-container {
         max-width: 80% !important;
         margin-left: auto !important;
         margin-right: auto !important;
         padding: 2rem !important;
+        width: 80% !important;
     }
-    /* Force pentru Streamlit wide layout */
+    /* Force pentru Streamlit wide layout - multiple selectori */
     .stApp > div:first-child > div:first-child {
+        max-width: 80% !important;
+        margin: 0 auto !important;
+        width: 80% !important;
+    }
+    /* Override pentru toate containerele principale */
+    .main {
+        max-width: 80% !important;
+        margin: 0 auto !important;
+    }
+    /* Force pentru elementele Streamlit care pot suprascrie */
+    [data-testid="stAppViewContainer"] > div {
         max-width: 80% !important;
         margin: 0 auto !important;
     }
