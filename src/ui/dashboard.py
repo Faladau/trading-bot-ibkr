@@ -99,10 +99,6 @@ st.markdown("""
     /* Background gradient cu pattern-uri de trading */
     .stApp {
         background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-        background-image: url('{TRADING_BG_IMAGE_URL}');
-        background-size: cover;
-        background-position: center;
-        background-blend-mode: overlay;
         color: #ffffff;
         position: relative;
         overflow: hidden;
