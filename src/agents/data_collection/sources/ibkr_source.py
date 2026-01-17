@@ -5,7 +5,6 @@ IBKR Data Source - Implementare pentru Interactive Brokers
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
 import asyncio
-from ib_insync import IB, Stock, Contract
 
 from src.agents.data_collection.sources.base_source import BaseDataSource
 from src.common.models.market_data import Bar
@@ -24,7 +23,16 @@ class IBKRDataSource(BaseDataSource):
             port: Port (7497 paper, 7496 live)
             clientId: Client ID unic
         """
-        self.ib = IB()
+        # Lazy import pentru a evita event loop issues în Streamlit
+        try:
+            from ib_insync import IB, Stock, Contract
+            self.IB = IB
+            self.Stock = Stock
+            self.Contract = Contract
+        except ImportError as e:
+            raise ImportError(f"ib_insync nu este instalat: {e}")
+        
+        self.ib = self.IB()
         self.host = host
         self.port = port
         self.clientId = clientId
@@ -90,8 +98,8 @@ class IBKRDataSource(BaseDataSource):
             return []
         
         try:
-            # Creează contract
-            contract = Stock(symbol, 'SMART', 'USD')
+            # Creează contract (folosește lazy import)
+            contract = self.Stock(symbol, 'SMART', 'USD')
             
             # Parametri
             duration_str = f"{lookback_days} D"
@@ -137,7 +145,7 @@ class IBKRDataSource(BaseDataSource):
             return
         
         try:
-            contract = Stock(symbol, 'SMART', 'USD')
+            contract = self.Stock(symbol, 'SMART', 'USD')
             bar_size = self._convert_timeframe(timeframe)
             
             # Request cu keepUpToDate=True

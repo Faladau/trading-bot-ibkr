@@ -11,7 +11,8 @@ from src.common.utils.config_loader import ConfigLoader
 from src.common.logging_utils.logger import get_logger
 from src.common.models.market_data import Bar
 
-from src.agents.data_collection.sources.ibkr_source import IBKRDataSource
+# Lazy imports pentru a evita event loop issues în Streamlit
+# IBKRDataSource se importă doar când e necesar
 from src.agents.data_collection.sources.yahoo_source import YahooDataSource
 from src.agents.data_collection.sources.base_source import BaseDataSource
 from src.agents.data_collection.normalizer import DataNormalizer
@@ -53,6 +54,8 @@ class DataCollectionAgent:
             
             # Conectează la sursa primară
             if data_source_name.upper() == "IBKR":
+                # Lazy import pentru a evita event loop issues în Streamlit
+                from src.agents.data_collection.sources.ibkr_source import IBKRDataSource
                 self.data_source = IBKRDataSource(
                     host=ibkr_config.get("host", "127.0.0.1"),
                     port=ibkr_config.get("port", 7497),
@@ -158,7 +161,8 @@ class DataCollectionAgent:
             output_format = config.get("output_format", ["csv", "json"])
             
             # Filename
-            date_str = datetime.utcnow().strftime('%Y%m%d')
+            from datetime import timezone
+            date_str = datetime.now(timezone.utc).strftime('%Y%m%d')
             base_name = f"{data_dir}/{symbol}_{timeframe}_{date_str}"
             
             # CSV
@@ -187,13 +191,24 @@ class DataCollectionAgent:
         """
         source_name_upper = source_name.upper()
         
-        if source_name_upper == "YAHOO":
+        if source_name_upper == "IBKR":
+            # Lazy import pentru a evita event loop issues în Streamlit
+            from src.agents.data_collection.sources.ibkr_source import IBKRDataSource
+            ibkr_config = self.config.get("ibkr", {})
+            return IBKRDataSource(
+                host=ibkr_config.get("host", "127.0.0.1"),
+                port=ibkr_config.get("port", 7497),
+                clientId=ibkr_config.get("clientId", 1)
+            )
+        elif source_name_upper == "YAHOO":
             try:
                 return YahooDataSource()
             except ImportError as e:
                 self.logger.error(f"Cannot create Yahoo source: {e}")
                 return None
         elif source_name_upper == "IBKR":
+            # Lazy import pentru a evita event loop issues în Streamlit
+            from src.agents.data_collection.sources.ibkr_source import IBKRDataSource
             ibkr_config = self.config.get("ibkr", {})
             return IBKRDataSource(
                 host=ibkr_config.get("host", "127.0.0.1"),
