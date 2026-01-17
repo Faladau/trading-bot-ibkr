@@ -27,13 +27,103 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS cu background atractiv și design modern
+# Custom CSS cu background atractiv și grafice subtile de trading
 st.markdown("""
 <style>
-    /* Background gradient atractiv */
+    /* Background gradient cu pattern-uri de trading */
     .stApp {
         background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
         color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Pattern de candlesticks subtil în background */
+    .stApp::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            /* Candlesticks pattern subtil */
+            repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 20px,
+                rgba(102, 126, 234, 0.03) 20px,
+                rgba(102, 126, 234, 0.03) 21px
+            ),
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 40px,
+                rgba(118, 75, 162, 0.03) 40px,
+                rgba(118, 75, 162, 0.03) 41px
+            ),
+            /* Linii de trend diagonale */
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 100px,
+                rgba(255, 255, 255, 0.02) 100px,
+                rgba(255, 255, 255, 0.02) 101px
+            ),
+            repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 150px,
+                rgba(102, 126, 234, 0.02) 150px,
+                rgba(102, 126, 234, 0.02) 151px
+            );
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    /* Grafice SVG de trading ca watermark */
+    .stApp::after {
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-5deg);
+        width: 80%;
+        height: 80%;
+        background-image: 
+            /* Pattern de candlesticks stilizate */
+            radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.4;
+    }
+    
+    /* Grid pattern subtil pentru coordonate de trading */
+    .trading-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.2;
+    }
+    
+    /* Animație subtilă pentru pattern-uri */
+    @keyframes subtleMove {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(2px, 2px); }
+    }
+    
+    .stApp::before {
+        animation: subtleMove 20s ease-in-out infinite;
     }
     
     /* Carduri glassmorphism */
@@ -132,6 +222,58 @@ st.markdown("""
         border-radius: 15px;
         padding: 1.5rem;
         margin-bottom: 1rem;
+    }
+    
+    /* Asigură că conținutul este deasupra pattern-urilor */
+    .main > div {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Candlesticks decorative în colțuri */
+    .candlestick-decoration {
+        position: fixed;
+        width: 3px;
+        height: 20px;
+        background: linear-gradient(to bottom, 
+            rgba(76, 175, 80, 0.3) 0%,
+            rgba(76, 175, 80, 0.3) 40%,
+            rgba(76, 175, 80, 0.1) 40%,
+            rgba(76, 175, 80, 0.1) 60%,
+            rgba(76, 175, 80, 0.3) 60%,
+            rgba(76, 175, 80, 0.3) 100%
+        );
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    /* Linii de support/resistance subtile */
+    .support-line {
+        position: fixed;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, 
+            transparent 0%,
+            rgba(76, 175, 80, 0.2) 20%,
+            rgba(76, 175, 80, 0.2) 80%,
+            transparent 100%
+        );
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    .resistance-line {
+        position: fixed;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, 
+            transparent 0%,
+            rgba(244, 67, 54, 0.2) 20%,
+            rgba(244, 67, 54, 0.2) 80%,
+            transparent 100%
+        );
+        pointer-events: none;
+        z-index: 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -368,10 +510,17 @@ def main():
     state = DashboardState()
     config = load_config()
     
+    # Adaugă elemente decorative de trading în background
+    st.markdown("""
+    <div class="trading-grid"></div>
+    <div class="support-line" style="bottom: 30%;"></div>
+    <div class="resistance-line" style="top: 20%;"></div>
+    """, unsafe_allow_html=True)
+    
     # Header cu gradient
     st.markdown("""
-    <div style="text-align: center; padding: 2rem 0;">
-        <h1 style="color: #ffffff; font-size: 3rem; margin-bottom: 0.5rem;">📈 Trading Bot v6.2</h1>
+    <div style="text-align: center; padding: 2rem 0; position: relative; z-index: 10;">
+        <h1 style="color: #ffffff; font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);">📈 Trading Bot v6.2</h1>
         <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">Dashboard de Monitorizare</p>
     </div>
     """, unsafe_allow_html=True)
@@ -561,6 +710,9 @@ def main():
         if auto_refresh:
             time.sleep(60)
             st.rerun()
+    
+    # Închide div-ul pentru z-index
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
