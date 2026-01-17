@@ -60,11 +60,17 @@
     padding: 2rem;
 }
 
-/* Override pentru Streamlit blocks */
+/* Override pentru Streamlit blocks - FORȚAT pentru refresh */
 [data-testid="stAppViewContainer"] {
-    max-width: 80%;
-    margin: 0 auto;
-    padding: 2rem;
+    max-width: 80% !important;
+    margin: 0 auto !important;
+    padding: 2rem !important;
+}
+
+.main .block-container {
+    max-width: 80% !important;
+    margin: 0 auto !important;
+    padding: 2rem !important;
 }
 
 /* ============================================
