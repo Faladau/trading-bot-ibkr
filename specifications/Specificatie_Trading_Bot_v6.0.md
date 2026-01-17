@@ -295,15 +295,15 @@ trading_bot/
 │   ├── agents/                  # 🆕 Agenții principali (fiecare în folder separat)
 │   │   ├── __init__.py
 │   │   │
-│   │   ├── agent1/              # Agent 1 - Data Collection
+│   │   ├── data_collection/     # Data Collection Agent
 │   │   │   ├── __init__.py
 │   │   │   └── agent.py
 │   │   │
-│   │   ├── agent2/              # Agent 2 - Decision
+│   │   ├── decision/            # Decision Agent
 │   │   │   ├── __init__.py
 │   │   │   └── agent.py
 │   │   │
-│   │   └── agent3/              # Agent 3 - Execution
+│   │   └── execution/           # Execution Agent
 │   │       ├── __init__.py
 │   │       └── agent.py
 │   │
@@ -365,15 +365,15 @@ trading_bot/
 ├── tests/
 │   ├── __init__.py
 │   │
-│   ├── agent1/                  # 🆕 Teste Agent 1
+│   ├── data_collection/         # 🆕 Teste Data Collection Agent
 │   │   ├── __init__.py
 │   │   └── test_data_collection_agent.py
 │   │
-│   ├── agent2/                  # 🆕 Teste Agent 2
+│   ├── decision/                # 🆕 Teste Decision Agent
 │   │   ├── __init__.py
 │   │   └── test_decision_agent.py
 │   │
-│   ├── agent3/                  # 🆕 Teste Agent 3
+│   ├── execution/               # 🆕 Teste Execution Agent
 │   │   ├── __init__.py
 │   │   └── test_execution_agent.py
 │   │

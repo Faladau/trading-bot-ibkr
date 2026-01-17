@@ -20,15 +20,15 @@ trading_bot/
 │   ├── main.py                  # Entry point
 │   │
 │   ├── agents/                  # 🎯 AGENȚI (fiecare în folder separat)
-│   │   ├── agent1/              # Data Collection
+│   │   ├── data_collection/     # Data Collection Agent
 │   │   │   ├── __init__.py
 │   │   │   └── agent.py
 │   │   │
-│   │   ├── agent2/              # Decision
+│   │   ├── decision/            # Decision Agent
 │   │   │   ├── __init__.py
 │   │   │   └── agent.py
 │   │   │
-│   │   └── agent3/              # Execution
+│   │   └── execution/           # Execution Agent
 │   │       ├── __init__.py
 │   │       └── agent.py
 │   │
@@ -45,9 +45,9 @@ trading_bot/
 │   └── storage/                 # Persistence
 │
 ├── tests/
-│   ├── agent1/                  # 🧪 Teste Agent 1
-│   ├── agent2/                  # 🧪 Teste Agent 2
-│   ├── agent3/                  # 🧪 Teste Agent 3
+│   ├── data_collection/         # 🧪 Teste Data Collection Agent
+│   ├── decision/                # 🧪 Teste Decision Agent
+│   ├── execution/               # 🧪 Teste Execution Agent
 │   ├── common/                  # 🧪 Teste module comune
 │   └── integration/             # 🧪 Teste integrare
 │
@@ -64,23 +64,23 @@ trading_bot/
 
 ### În agenți:
 ```python
-# Agent 1
+# Data Collection Agent
 from src.common.models.market_data import Bar
 from src.common.broker.data_provider import DataProvider
 
-# Agent 2
+# Decision Agent
 from src.common.models.signal import Signal
 from src.common.strategy.technical_analysis import calculate_ema
 
-# Agent 3
+# Execution Agent
 from src.common.models.trade import Order
 from src.common.risk.risk_manager import RiskManager
 ```
 
 ### În teste:
 ```python
-# Teste Agent 1
-from src.agents.agent1.agent import DataCollectionAgent
+# Teste Data Collection Agent
+from src.agents.data_collection.agent import DataCollectionAgent
 from src.common.models.market_data import Bar
 
 # Teste comune
@@ -102,6 +102,6 @@ from src.common.utils.config_loader import load_config
 
 ## 📝 Note
 
-- **Agent 1** folosește: `common/broker`, `common/models`, `common/utils`, `common/logging_utils`
-- **Agent 2** folosește: `common/strategy`, `common/models`, `common/utils`, `common/logging_utils`
-- **Agent 3** folosește: `common/broker`, `common/risk`, `common/models`, `common/utils`, `common/logging_utils`
+- **Data Collection Agent** folosește: `common/broker`, `common/models`, `common/utils`, `common/logging_utils`
+- **Decision Agent** folosește: `common/strategy`, `common/models`, `common/utils`, `common/logging_utils`
+- **Execution Agent** folosește: `common/broker`, `common/risk`, `common/models`, `common/utils`, `common/logging_utils`

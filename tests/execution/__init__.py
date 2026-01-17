@@ -1,0 +1,3 @@
+"""
+Tests pentru Execution Agent
+"""

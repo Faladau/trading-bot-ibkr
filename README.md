@@ -63,9 +63,9 @@ trading_bot/
 │   ├── main.py                  # Entry point - orchestrator
 │   │
 │   ├── agents/                  # 🎯 Agenți (fiecare în folder separat)
-│   │   ├── agent1/              # Data Collection
-│   │   ├── agent2/              # Decision
-│   │   └── agent3/              # Execution
+│   │   ├── data_collection/     # Data Collection Agent
+│   │   ├── decision/            # Decision Agent
+│   │   └── execution/           # Execution Agent
 │   │
 │   ├── common/                  # 🔧 Module comune
 │   │   ├── broker/              # IBKR connection & data
@@ -80,9 +80,9 @@ trading_bot/
 │   └── storage/                 # Persistence
 │
 ├── tests/
-│   ├── agent1/                  # 🧪 Teste Agent 1
-│   ├── agent2/                  # 🧪 Teste Agent 2
-│   ├── agent3/                  # 🧪 Teste Agent 3
+│   ├── data_collection/         # 🧪 Teste Data Collection Agent
+│   ├── decision/                # 🧪 Teste Decision Agent
+│   ├── execution/               # 🧪 Teste Execution Agent
 │   ├── common/                  # 🧪 Teste module comune
 │   └── integration/             # 🧪 Teste integrare
 │

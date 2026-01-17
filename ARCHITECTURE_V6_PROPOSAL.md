@@ -21,19 +21,19 @@ trading_bot/
 │   ├── agents/
 │   │   ├── __init__.py
 │   │   │
-│   │   ├── agent1/              # 🆕 Agent 1 - Data Collection
+│   │   ├── data_collection/     # 🆕 Data Collection Agent
 │   │   │   ├── __init__.py
-│   │   │   ├── agent.py         # Implementare Agent 1
+│   │   │   ├── agent.py         # Implementare Data Collection Agent
 │   │   │   └── config.py        # Config specific (dacă e nevoie)
 │   │   │
-│   │   ├── agent2/              # 🆕 Agent 2 - Decision
+│   │   ├── decision/            # 🆕 Decision Agent
 │   │   │   ├── __init__.py
-│   │   │   ├── agent.py         # Implementare Agent 2
+│   │   │   ├── agent.py         # Implementare Decision Agent
 │   │   │   └── config.py
 │   │   │
-│   │   └── agent3/              # 🆕 Agent 3 - Execution
+│   │   └── execution/           # 🆕 Execution Agent
 │   │       ├── __init__.py
-│   │       ├── agent.py         # Implementare Agent 3
+│   │       ├── agent.py         # Implementare Execution Agent
 │   │       └── config.py
 │   │
 │   ├── common/                  # 🆕 Module comune (folosite de mai mulți agenți)
@@ -88,18 +88,18 @@ trading_bot/
 ├── tests/
 │   ├── __init__.py
 │   │
-│   ├── agent1/                  # 🆕 Teste Agent 1
+│   ├── data_collection/         # 🆕 Teste Data Collection Agent
 │   │   ├── __init__.py
 │   │   ├── test_data_collection_agent.py
 │   │   └── test_data_provider.py
 │   │
-│   ├── agent2/                  # 🆕 Teste Agent 2
+│   ├── decision/                # 🆕 Teste Decision Agent
 │   │   ├── __init__.py
 │   │   ├── test_decision_agent.py
 │   │   ├── test_technical_analysis.py
 │   │   └── test_signal_generator.py
 │   │
-│   ├── agent3/                  # 🆕 Teste Agent 3
+│   ├── execution/               # 🆕 Teste Execution Agent
 │   │   ├── __init__.py
 │   │   ├── test_execution_agent.py
 │   │   ├── test_risk_manager.py
@@ -145,17 +145,17 @@ trading_bot/
 
 ### Ce mutăm:
 
-1. **Agent 1:**
-   - `src/agents/data_collection_agent.py` → `src/agents/agent1/agent.py`
-   - Teste → `tests/agent1/`
+1. **Data Collection Agent:**
+   - `src/agents/data_collection_agent.py` → `src/agents/data_collection/agent.py`
+   - Teste → `tests/data_collection/`
 
-2. **Agent 2:**
-   - `src/agents/decision_agent.py` → `src/agents/agent2/agent.py`
-   - Teste → `tests/agent2/`
+2. **Decision Agent:**
+   - `src/agents/decision_agent.py` → `src/agents/decision/agent.py`
+   - Teste → `tests/decision/`
 
-3. **Agent 3:**
-   - `src/agents/execution_agent.py` → `src/agents/agent3/agent.py`
-   - Teste → `tests/agent3/`
+3. **Execution Agent:**
+   - `src/agents/execution_agent.py` → `src/agents/execution/agent.py`
+   - Teste → `tests/execution/`
 
 4. **Module comune:**
    - `src/broker/` → `src/common/broker/`
@@ -184,6 +184,18 @@ from src.models import Bar
 ```python
 from src.common.broker.data_provider import DataProvider
 from src.common.models import Bar
+```
+
+### Import agenți:
+```python
+# Data Collection Agent
+from src.agents.data_collection.agent import DataCollectionAgent
+
+# Decision Agent
+from src.agents.decision.agent import DecisionAgent
+
+# Execution Agent
+from src.agents.execution.agent import ExecutionAgent
 ```
 
 ---

@@ -1,5 +1,5 @@
 """
-Agent 1: Data Collection Agent
+Data Collection Agent
 Colectează date brute de piață, fără interpretare sau logică de business.
 
 Responsabilități:
@@ -10,7 +10,7 @@ Responsabilități:
 5. Normalizează formatul
 6. Salvează datele local (CSV/JSON)
 
-⚠️ IMPORTANT: Agent 1 este 100% market data. Nu verifică sold, capital sau orice legat de bani.
+⚠️ IMPORTANT: Data Collection Agent este 100% market data. Nu verifică sold, capital sau orice legat de bani.
 """
 
 # TODO: Implementare Agent 1 conform v6.0
