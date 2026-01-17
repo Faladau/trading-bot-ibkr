@@ -10,10 +10,13 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 import time
+import asyncio
+import threading
 
 # Import agenți și modele
 from src.common.utils.config_loader import ConfigLoader
 from src.common.logging_utils.logger import get_logger
+from src.agents.data_collection import DataCollectionAgent
 
 # Configure page
 st.set_page_config(
@@ -399,10 +402,17 @@ def main():
         for log in logs[:10]:
             st.text(f"**{log['time']}**: {log['agent']}: {log['message']}")
     
-    # Auto-refresh
+    # Auto-refresh când bot-ul rulează
     if st.session_state.bot_running:
-        time.sleep(5)
+        # Refresh la fiecare 10 secunde când rulează
+        time.sleep(10)
         st.rerun()
+    else:
+        # Refresh manual sau la fiecare 30 secunde când e idle
+        auto_refresh = st.checkbox("🔄 Auto-refresh (30s)", value=False)
+        if auto_refresh:
+            time.sleep(30)
+            st.rerun()
 
 
 if __name__ == "__main__":
