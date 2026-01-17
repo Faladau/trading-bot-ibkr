@@ -70,6 +70,29 @@ st.markdown("""
         margin: 0 auto !important;
     }
 </style>
+<script>
+    // Force layout 80% după ce pagina se încarcă complet
+    function forceLayout80() {
+        const containers = document.querySelectorAll('section[data-testid="stAppViewContainer"], .main .block-container');
+        containers.forEach(container => {
+            container.style.maxWidth = '80%';
+            container.style.marginLeft = 'auto';
+            container.style.marginRight = 'auto';
+            container.style.padding = '2rem';
+        });
+    }
+    // Rulează imediat și după ce DOM-ul se încarcă
+    forceLayout80();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', forceLayout80);
+    } else {
+        forceLayout80();
+    }
+    // Rulează și după un mic delay pentru a acoperi cazurile când Streamlit aplică stilurile mai târziu
+    setTimeout(forceLayout80, 100);
+    setTimeout(forceLayout80, 500);
+    setTimeout(forceLayout80, 1000);
+</script>
 """, unsafe_allow_html=True)
 
 
