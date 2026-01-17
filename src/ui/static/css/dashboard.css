@@ -174,11 +174,11 @@ h1, h2, h3, h4, h5, h6, p, .stText {
 }
 
 section[data-testid="stAppViewContainer"] {
-    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
+    background: #1a1a2e !important;
 }
 
 header[data-testid="stHeader"] {
-    background: rgba(15, 12, 41, 0.8) !important;
+    background: rgba(26, 26, 46, 0.9) !important;
 }
 
 /* ============================================
