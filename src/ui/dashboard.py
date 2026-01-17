@@ -27,71 +27,89 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# SVG inline pentru grafice financiare subtile
+# URL-uri pentru imagini de background gratuite (Pixabay, Unsplash, etc.)
+# Folosim SVG inline ca fallback dacă URL-urile nu funcționează
+TRADING_BG_IMAGE_URL = "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80&auto=format&fit=crop"  # Stock chart
+# Alternativ: "https://cdn.pixabay.com/photo/2016/11/19/14/00/code-1839406_1280.jpg"  # Tech background
+
+# SVG inline elaborat pentru grafice financiare subtile (fallback)
 TRADING_CHART_SVG = """
-<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position: fixed; top: 0; left: 0; z-index: 0; opacity: 0.15; pointer-events: none;">
-    <!-- Grid pattern subtil -->
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position: fixed; top: 0; left: 0; z-index: 0; opacity: 0.12; pointer-events: none;">
     <defs>
-        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(102, 126, 234, 0.3)" stroke-width="0.5"/>
+        <!-- Grid pattern -->
+        <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(102, 126, 234, 0.25)" stroke-width="0.5"/>
         </pattern>
-        <!-- Candlesticks pattern -->
-        <g id="candlestick">
-            <line x1="0" y1="10" x2="0" y2="30" stroke="rgba(76, 175, 80, 0.4)" stroke-width="2"/>
-            <rect x="-3" y="8" width="6" height="4" fill="rgba(76, 175, 80, 0.3)"/>
-            <rect x="-3" y="28" width="6" height="4" fill="rgba(76, 175, 80, 0.3)"/>
+        <!-- Candlestick pattern -->
+        <g id="candlestick-up">
+            <line x1="0" y1="15" x2="0" y2="5" stroke="rgba(76, 175, 80, 0.5)" stroke-width="2"/>
+            <rect x="-4" y="3" width="8" height="4" fill="rgba(76, 175, 80, 0.4)"/>
         </g>
-    </defs>
-    
-    <!-- Background gradient -->
-    <rect width="100%" height="100%" fill="url(#gradient)"/>
-    <defs>
-        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <g id="candlestick-down">
+            <line x1="0" y1="5" x2="0" y2="15" stroke="rgba(244, 67, 54, 0.5)" stroke-width="2"/>
+            <rect x="-4" y="13" width="8" height="4" fill="rgba(244, 67, 54, 0.4)"/>
+        </g>
+        <!-- Gradient pentru background -->
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" style="stop-color:#0f0c29;stop-opacity:1" />
             <stop offset="50%" style="stop-color:#302b63;stop-opacity:1" />
             <stop offset="100%" style="stop-color:#24243e;stop-opacity:1" />
         </linearGradient>
     </defs>
     
-    <!-- Grid pattern -->
+    <!-- Background -->
+    <rect width="100%" height="100%" fill="url(#bgGradient)"/>
+    
+    <!-- Grid -->
     <rect width="100%" height="100%" fill="url(#grid)"/>
     
-    <!-- Candlesticks decorative -->
-    <use href="#candlestick" x="10%" y="20%" transform="scale(0.8)"/>
-    <use href="#candlestick" x="25%" y="35%" transform="scale(1.2)"/>
-    <use href="#candlestick" x="40%" y="15%" transform="scale(0.9)"/>
-    <use href="#candlestick" x="55%" y="45%" transform="scale(1.1)"/>
-    <use href="#candlestick" x="70%" y="25%" transform="scale(0.7)"/>
-    <use href="#candlestick" x="85%" y="40%" transform="scale(1.0)"/>
+    <!-- Multiple candlesticks pattern -->
+    <use href="#candlestick-up" x="8%" y="25%" transform="scale(1.5)"/>
+    <use href="#candlestick-down" x="15%" y="40%" transform="scale(1.2)"/>
+    <use href="#candlestick-up" x="22%" y="18%" transform="scale(1.8)"/>
+    <use href="#candlestick-down" x="30%" y="55%" transform="scale(1.0)"/>
+    <use href="#candlestick-up" x="38%" y="32%" transform="scale(1.3)"/>
+    <use href="#candlestick-down" x="45%" y="48%" transform="scale(1.6)"/>
+    <use href="#candlestick-up" x="52%" y="22%" transform="scale(1.1)"/>
+    <use href="#candlestick-down" x="60%" y="38%" transform="scale(1.4)"/>
+    <use href="#candlestick-up" x="68%" y="28%" transform="scale(1.7)"/>
+    <use href="#candlestick-down" x="75%" y="45%" transform="scale(1.2)"/>
+    <use href="#candlestick-up" x="82%" y="35%" transform="scale(1.5)"/>
+    <use href="#candlestick-down" x="90%" y="50%" transform="scale(1.3)"/>
     
-    <!-- Linii de trend -->
-    <line x1="5%" y1="30%" x2="30%" y2="20%" stroke="rgba(102, 126, 234, 0.3)" stroke-width="1" stroke-dasharray="5,5"/>
-    <line x1="20%" y1="50%" x2="60%" y2="25%" stroke="rgba(118, 75, 162, 0.3)" stroke-width="1" stroke-dasharray="5,5"/>
-    <line x1="40%" y1="60%" x2="80%" y2="35%" stroke="rgba(76, 175, 80, 0.3)" stroke-width="1" stroke-dasharray="5,5"/>
+    <!-- Trend lines -->
+    <line x1="5%" y1="35%" x2="35%" y2="25%" stroke="rgba(102, 126, 234, 0.35)" stroke-width="1.5" stroke-dasharray="8,4"/>
+    <line x1="25%" y1="55%" x2="65%" y2="30%" stroke="rgba(118, 75, 162, 0.35)" stroke-width="1.5" stroke-dasharray="8,4"/>
+    <line x1="45%" y1="65%" x2="85%" y2="40%" stroke="rgba(76, 175, 80, 0.35)" stroke-width="1.5" stroke-dasharray="8,4"/>
     
-    <!-- Support/Resistance lines -->
-    <line x1="0" y1="30%" x2="100%" y2="30%" stroke="rgba(76, 175, 80, 0.2)" stroke-width="1"/>
-    <line x1="0" y1="20%" x2="100%" y2="20%" stroke="rgba(244, 67, 54, 0.2)" stroke-width="1"/>
+    <!-- Support/Resistance -->
+    <line x1="0" y1="35%" x2="100%" y2="35%" stroke="rgba(76, 175, 80, 0.25)" stroke-width="1.5"/>
+    <line x1="0" y1="25%" x2="100%" y2="25%" stroke="rgba(244, 67, 54, 0.25)" stroke-width="1.5"/>
     
-    <!-- Chart lines decorative -->
-    <path d="M 10% 50% Q 30% 40%, 50% 45% T 90% 50%" fill="none" stroke="rgba(102, 126, 234, 0.25)" stroke-width="2"/>
-    <path d="M 5% 70% Q 25% 60%, 45% 65% T 85% 70%" fill="none" stroke="rgba(118, 75, 162, 0.25)" stroke-width="2"/>
+    <!-- Chart curves -->
+    <path d="M 5% 60% Q 25% 50%, 45% 55% T 85% 60%" fill="none" stroke="rgba(102, 126, 234, 0.3)" stroke-width="2.5"/>
+    <path d="M 10% 75% Q 30% 65%, 50% 70% T 90% 75%" fill="none" stroke="rgba(118, 75, 162, 0.3)" stroke-width="2.5"/>
+    <path d="M 15% 50% Q 35% 40%, 55% 45% T 95% 50%" fill="none" stroke="rgba(76, 175, 80, 0.3)" stroke-width="2.5"/>
 </svg>
 """
 
 # Custom CSS cu background atractiv și grafice subtile de trading
-st.markdown(f"""
+st.markdown("""
 <style>
     /* Background gradient cu pattern-uri de trading */
-    .stApp {{
+    .stApp {
         background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        background-image: url('{TRADING_BG_IMAGE_URL}');
+        background-size: cover;
+        background-position: center;
+        background-blend-mode: overlay;
         color: #ffffff;
         position: relative;
         overflow: hidden;
-    }}
+    }
     
     /* SVG background overlay */
-    .trading-bg-overlay {{
+    .trading-bg-overlay {
         position: fixed;
         top: 0;
         left: 0;
@@ -100,10 +118,10 @@ st.markdown(f"""
         z-index: 0;
         pointer-events: none;
         opacity: 0.15;
-    }}
+    }
     
     /* Pattern-uri CSS suplimentare */
-    .stApp::before {{
+    .stApp::before {
         content: '';
         position: fixed;
         top: 0;
@@ -127,7 +145,7 @@ st.markdown(f"""
             );
         pointer-events: none;
         z-index: 0;
-    }}
+    }
     
     /* Carduri glassmorphism */
     .metric-card {
@@ -228,20 +246,20 @@ st.markdown(f"""
     }
     
     /* Asigură că conținutul este deasupra pattern-urilor */
-    .main > div {{
+    .main > div {
         position: relative;
         z-index: 10;
-    }}
+    }
     
     /* Streamlit specific - forțează background */
-    section[data-testid="stAppViewContainer"] {{
+    section[data-testid="stAppViewContainer"] {
         background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
-    }}
+    }
     
     /* Header background */
-    header[data-testid="stHeader"] {{
+    header[data-testid="stHeader"] {
         background: rgba(15, 12, 41, 0.8) !important;
-    }}
+    }
     
     /* Candlesticks decorative în colțuri */
     .candlestick-decoration {
@@ -523,11 +541,12 @@ def main():
     state = DashboardState()
     config = load_config()
     
-    # Adaugă SVG cu grafice financiare în background
+    # Adaugă SVG cu grafice financiare în background (overlay peste background image)
     st.markdown(f"""
     <div class="trading-bg-overlay">
         {TRADING_CHART_SVG}
     </div>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 12, 41, 0.85) 0%, rgba(48, 43, 99, 0.85) 50%, rgba(36, 36, 62, 0.85) 100%); z-index: 0; pointer-events: none;"></div>
     """, unsafe_allow_html=True)
     
     # Header cu gradient
