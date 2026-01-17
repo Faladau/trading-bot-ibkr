@@ -63,7 +63,7 @@ if css_path.exists():
 
 # App layout
 app.layout = html.Div([
-    # Background image with overlay - mai transparent
+    # Background simplu dark, fără mov
     html.Div(
         style={
             'position': 'fixed',
@@ -71,25 +71,8 @@ app.layout = html.Div([
             'left': 0,
             'width': '100%',
             'height': '100%',
-            'background-image': 'url(https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80)',
-            'background-size': 'cover',
-            'background-position': 'center',
-            'background-repeat': 'no-repeat',
-            'opacity': '0.3',
+            'background': '#1a1a2e',
             'z-index': 0,
-            'pointer-events': 'none'
-        }
-    ),
-    # Gradient overlay mai opac pentru lizibilitate
-    html.Div(
-        style={
-            'position': 'fixed',
-            'top': 0,
-            'left': 0,
-            'width': '100%',
-            'height': '100%',
-            'background': 'linear-gradient(135deg, rgba(15, 12, 41, 0.92) 0%, rgba(48, 43, 99, 0.92) 50%, rgba(36, 36, 62, 0.92) 100%)',
-            'z-index': 1,
             'pointer-events': 'none'
         }
     ),
