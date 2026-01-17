@@ -12,6 +12,7 @@ from src.common.logging_utils.logger import get_logger
 from src.common.models.market_data import Bar
 
 from src.agents.data_collection.sources.ibkr_source import IBKRDataSource
+from src.agents.data_collection.sources.yahoo_source import YahooDataSource
 from src.agents.data_collection.sources.base_source import BaseDataSource
 from src.agents.data_collection.normalizer import DataNormalizer
 from src.agents.data_collection.validator import DataValidator
@@ -48,24 +49,31 @@ class DataCollectionAgent:
             # Obține config data_collector
             data_collector_config = self.config.get("data_collector", {})
             ibkr_config = self.config.get("ibkr", {})
+            data_source_name = data_collector_config.get("data_source", "IBKR")
             
-            # Conectează la IBKR
-            self.data_source = IBKRDataSource(
-                host=ibkr_config.get("host", "127.0.0.1"),
-                port=ibkr_config.get("port", 7497),
-                clientId=ibkr_config.get("clientId", 1)
-            )
-            
-            connected = await self.data_source.connect()
-            if not connected:
-                self.logger.error("Failed to connect to IBKR")
+            # Conectează la sursa primară
+            if data_source_name.upper() == "IBKR":
+                self.data_source = IBKRDataSource(
+                    host=ibkr_config.get("host", "127.0.0.1"),
+                    port=ibkr_config.get("port", 7497),
+                    clientId=ibkr_config.get("clientId", 1)
+                )
+                connected = await self.data_source.connect()
+                if not connected:
+                    self.logger.warning("Failed to connect to IBKR, will try backup source if configured")
+                    # Nu returnăm False aici - încercăm backup
+            elif data_source_name.upper() == "YAHOO":
+                self.data_source = YahooDataSource()
+                connected = await self.data_source.connect()
+            else:
+                self.logger.error(f"Unknown data source: {data_source_name}")
                 return False
             
             # Crează output directories
             data_dir = data_collector_config.get("data_dir", "data/processed")
             Path(data_dir).mkdir(parents=True, exist_ok=True)
             
-            self.logger.info("DataCollectionAgent initialized successfully")
+            self.logger.info(f"DataCollectionAgent initialized with {data_source_name}")
             return True
         except Exception as e:
             self.logger.error(f"Initialization error: {e}")
@@ -91,7 +99,7 @@ class DataCollectionAgent:
             for symbol in symbols:
                 self.logger.info(f"Collecting {symbol}...")
                 
-                # Fetch
+                # Fetch de la sursa primară
                 bars = await self.data_source.fetch_historical_data(
                     symbol=symbol,
                     timeframe=timeframe,
@@ -99,8 +107,24 @@ class DataCollectionAgent:
                     useRTH=useRTH
                 )
                 
+                # Dacă nu avem date și avem backup source, încercăm backup
                 if not bars:
-                    self.logger.warning(f"No data for {symbol}")
+                    backup_source_name = data_collector_config.get("backup_source")
+                    if backup_source_name:
+                        self.logger.info(f"No data from primary source, trying backup: {backup_source_name}")
+                        backup_source = self._get_backup_source(backup_source_name)
+                        if backup_source:
+                            await backup_source.connect()
+                            bars = await backup_source.fetch_historical_data(
+                                symbol=symbol,
+                                timeframe=timeframe,
+                                lookback_days=lookback_days,
+                                useRTH=useRTH
+                            )
+                            await backup_source.disconnect()
+                
+                if not bars:
+                    self.logger.warning(f"No data for {symbol} from any source")
                     continue
                 
                 # Validate
@@ -151,6 +175,34 @@ class DataCollectionAgent:
         except Exception as e:
             self.logger.error(f"Save error: {e}")
             return False
+    
+    def _get_backup_source(self, source_name: str) -> Optional[BaseDataSource]:
+        """Creează backup source.
+        
+        Args:
+            source_name: Nume sursă ('YAHOO', 'ALPHA', etc.)
+        
+        Returns:
+            BaseDataSource sau None
+        """
+        source_name_upper = source_name.upper()
+        
+        if source_name_upper == "YAHOO":
+            try:
+                return YahooDataSource()
+            except ImportError as e:
+                self.logger.error(f"Cannot create Yahoo source: {e}")
+                return None
+        elif source_name_upper == "IBKR":
+            ibkr_config = self.config.get("ibkr", {})
+            return IBKRDataSource(
+                host=ibkr_config.get("host", "127.0.0.1"),
+                port=ibkr_config.get("port", 7497),
+                clientId=ibkr_config.get("clientId", 1)
+            )
+        else:
+            self.logger.warning(f"Unknown backup source: {source_name}")
+            return None
     
     async def shutdown(self) -> bool:
         """Dezactivare controlată.

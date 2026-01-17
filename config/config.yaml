@@ -37,10 +37,10 @@ data_collector:
     - AAPL
     - MSFT
     - AMD
-  timeframe: "1H"
+  timeframe: "1D"          # 1D pentru Yahoo (1H poate fi limitat)
   lookback_days: 60
-  data_source: "IBKR"
-  backup_source: "YAHOO"
+  data_source: "YAHOO"      # Folosește Yahoo pentru testare (fără cont IBKR)
+  backup_source: "IBKR"     # IBKR ca backup (când ai cont)
   output_format: ["csv", "json"]
   data_dir: "data/processed"
   market: "US"
