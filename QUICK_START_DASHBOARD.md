@@ -7,7 +7,7 @@
 trading_bot_env\Scripts\activate
 
 # Rulează dashboard
-streamlit run app.py
+streamlit run streamlit_app.py
 ```
 
 Dashboard-ul va deschide automat în browser: `http://localhost:8501`
@@ -25,7 +25,7 @@ Dashboard-ul va deschide automat în browser: `http://localhost:8501`
 1. Click **"New app"**
 2. **Repository**: `Faladau/trading-bot-ibkr`
 3. **Branch**: `feature/models` (sau `main`)
-4. **Main file**: `app.py`
+4. **Main file**: `streamlit_app.py`
 5. Click **"Deploy"**
 
 ### Pasul 3: Acces

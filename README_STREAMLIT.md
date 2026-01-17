@@ -12,7 +12,7 @@
    ```
 
 2. **Verifică că ai următoarele fișiere:**
-   - ✅ `app.py` (entry point)
+   - ✅ `streamlit_app.py` (entry point)
    - ✅ `requirements.txt` (cu streamlit)
    - ✅ `.streamlit/config.toml` (configurație)
    - ✅ `src/ui/dashboard.py` (dashboard)
@@ -27,7 +27,7 @@
    - Click "New app"
    - Selectează repository-ul tău: `Faladau/trading-bot-ibkr`
    - Branch: `feature/models` (sau `main`)
-   - Main file path: `app.py`
+   - Main file path: `streamlit_app.py`
    - Click "Deploy"
 
 3. **Configurare Secrets (opțional):**
