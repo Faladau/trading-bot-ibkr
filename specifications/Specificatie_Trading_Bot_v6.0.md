@@ -79,8 +79,7 @@ Colectează date brute de piață, **fără interpretare sau logică de business
    - JSON pentru agenții următori
    - Structură: `data/historical/{symbol}_{timeframe}.csv`
 
-6. **Verifică sold disponibil** (opțional)
-   - Pentru Agent 3 (când e nevoie)
+**⚠️ IMPORTANT:** Agent 1 este **100% market data**. Nu verifică sold, capital sau orice legat de bani. Aceasta creează cuplare inutilă. Doar Agent 3 are voie să întrebe de capital.
 
 ### 3.3 Output
 
@@ -144,9 +143,12 @@ Interpretează datele primite de la Agent 1, calculează indicatori tehnici, apl
      - Opțional: EMA20 > EMA50 (trend ascendent)
      - Opțional: RSI între 40-70
    - **Reguli de ieșire (SELL):**
-     - Atingere Take Profit (1-3% profit)
-     - Atingere Stop Loss (< 1% pierdere)
-     - Close la final de sesiune (fără overnight)
+     - **Agent 2 doar SEMNALEAZĂ condiția de ieșire:**
+       - Atingere Take Profit (1-3% profit) → semnalează SELL
+       - Atingere Stop Loss (< 1% pierdere) → semnalează SELL
+       - Close la final de sesiune (fără overnight) → semnalează SELL
+     - **⚠️ IMPORTANT:** Agent 2 NU trimite ordine! Doar generează semnal.
+     - **Agent 3 decide când și cum trimite ordinul de ieșire.**
    - **HOLD:** Dacă nu sunt condiții pentru BUY sau SELL
 
 4. **Generează semnal clar**
@@ -154,7 +156,10 @@ Interpretează datele primite de la Agent 1, calculează indicatori tehnici, apl
    - Preț intrare (dacă BUY/SELL)
    - Take Profit (TP)
    - Stop Loss (SL)
-   - Scor de încredere (0.0 - 1.0)
+   - **Scor de încredere (0.0 - 1.0)**
+     - **Prag minim:** Agent 3 ignoră semnale cu confidence < 0.6 (configurabil)
+     - Face sistemul mai robust fără complexitate
+     - Filtrează semnale slabe automat
 
 5. **Salvează semnalul**
    - JSON pentru audit
@@ -204,24 +209,33 @@ Primește semnale de la Agent 2, validează riscul, calculează dimensiunea pozi
 
 1. **Primește semnalul de la Agent 2**
    - Input: `Signal` (model) sau JSON
+   - **Validare confidence:** Ignoră semnale cu confidence < prag minim (default: 0.6)
    - Validare semnal înainte de procesare
 
 2. **Rulează verificări de risc**
-   - **Daily Loss Limit:** Dacă pierderi cumulate >= 3-5% capital, oprește trading
+   - **Daily Loss Limit (HARD STOP):** 
+     - Dacă pierderi cumulate >= 3-5% capital, **oprește complet execuția**
+     - **Nu mai trimite ordine până a doua zi**
+     - Este un hard stop, nu implicit - trebuie scris explicit
    - **Max Trades per Day:** Max 10 trade-uri/zi
    - **Poziție existentă:** O singură poziție per simbol
-   - **Capital disponibil:** Verifică că există capital suficient
+   - **Capital disponibil:** **Agent 3 este singurul care verifică sold/capital**
    - **Min Capital Check:** Refuză dacă capital < 20% din requirement
 
 3. **Calculează mărimea poziției**
    - Formula: `position_size = (capital * 0.20) / entry_price`
    - Max 20% capital per trade
+   - **Limită suplimentară:** Max shares per trade sau max exposure per simbol
+     - Protecție la gap-uri mari la small cap
+     - Previne poziții prea mari la volatilitate extremă
    - Rotunjire la număr întreg de acțiuni
    - Validare că nu depășește limite
 
 4. **Trimite ordinele către IBKR**
    - **Bracket Order:** Ordin de intrare + TP + SL
    - Tip ordin: MARKET sau LIMIT (configurabil)
+   - **⚠️ IMPORTANT:** Agent 3 decide când și cum trimite ordinul
+     - Pentru ieșire: Agent 2 semnalează condiția, Agent 3 decide execuția
    - Confirmare execuție
    - Gestionare partial fills
 
@@ -414,12 +428,15 @@ agent2:
 agent3:
   trades_dir: data/trades
   save_json: true
+  min_confidence: 0.6  # Ignoră semnale sub acest prag
   risk:
     capital_initial: 500
     max_risk_per_trade: 0.20
     max_positions: 1
-    daily_loss_limit: 0.05
+    daily_loss_limit: 0.05  # HARD STOP - oprește complet până a doua zi
     max_trades_per_day: 10
+    max_shares_per_trade: 100  # Limită suplimentară pentru small cap
+    max_exposure_per_symbol: 200  # Max exposure per simbol (USD)
 
 strategy:
   timeframe: "1H"
@@ -532,6 +549,12 @@ logging:
 - VPS (Kamatera, DigitalOcean)
 - IB Gateway headless
 - Systemd service pentru auto-start
+
+**⚠️ RECOMANDARE IMPORTANTĂ:**
+- **Nu atinge cloud până nu ai minim 1-2 luni de paper trading stabil**
+- Paper trading local este suficient pentru început
+- Cloud adaugă complexitate inutilă în faza de dezvoltare
+- Focus pe stabilitate și testare înainte de deployment
 
 ---
 
