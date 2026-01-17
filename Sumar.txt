@@ -6,6 +6,7 @@ Botul de trading trebuie să facă lucruri simple și clare. Totul automat. Făr
 ✅ MODELS: Bar, Quote, Tick, Signal, Trade, Position, Order - implementate și testate
 ✅ TESTE: 56 teste unitare (33 utils + 23 models), toate trec
 ✅ STRUCTURĂ: Agenți în foldere separate (data_collection/, decision/, execution/) cu teste dedicate
+✅ DATA COLLECTION AGENT: Implementat complet (IBKR source, normalizer, validator, orchestrator) - 7 teste trec
 
 1.Se conectează la broker.
 Se conectează la Interactive Brokers prin API.
