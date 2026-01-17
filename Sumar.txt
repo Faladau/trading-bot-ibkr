@@ -1,0 +1,70 @@
+Botul de trading trebuie să facă lucruri simple și clare. Totul automat. Fără interpretări.
+
+✅ SETUP COMPLET: Python 3.12, Git, GitHub, venv, dependențe instalate
+✅ ARHITECTURĂ: Structură modulară pe straturi, documentație completă
+✅ UTILS: config_loader, logger, helpers, validators - implementate și testate
+✅ TESTE: 33 teste unitare, toate trec
+
+1.Se conectează la broker.
+Se conectează la Interactive Brokers prin API.
+Verifică dacă sesiunea este activă.
+Verifică soldul disponibil.
+
+2.Alege ce acțiuni urmărește.
+Scanează acțiuni small cap.
+Filtrează după preț între 2 și 20 USD.
+Filtrează după volum zilnic peste 500.000.
+Exclude acțiuni OTC.
+Păstrează o listă scurtă de simboluri.
+
+3.Colectează date de piață.
+Ia prețul curent.
+Ia istoricul recent.
+Ia volumul.
+Actualizează datele la interval fix.
+
+4.Analizează piața.
+Calculează EMA 20.
+Calculează EMA 50.
+Compară prețul cu EMA.
+Verifică dacă volumul confirmă mișcarea.
+
+5.Decide dacă intră în tranzacție.
+Intră doar dacă semnalele sunt clare.
+Intră doar dacă nu există poziție deschisă.
+Respectă limita de capital per tranzacție.
+
+6.Execută ordinul.
+Trimite ordin de cumpărare.
+Folosește market sau limit.
+Confirmă execuția.
+
+7.Gestionează poziția.
+Setează take profit între 1 și 3%.
+Setează stop loss sub 1%.
+Monitorizează poziția în timp real.
+Nu mută regulile.
+
+8.Iese din tranzacție.
+Vinde automat la atingerea targetului.
+Vinde automat la stop loss.
+Închide poziția la final de sesiune.
+
+9.Controlează riscul.
+Nu folosește leverage.
+Nu ține poziții peste noapte.
+Are o singură poziție per simbol.
+
+10.Loghează tot. ✅ Done
+Salvează fiecare decizie. ✅ Done (logger.py implementat)
+Salvează fiecare ordin. ✅ Done (logger.py implementat)
+Salvează fiecare rezultat. ✅ Done (logger.py implementat)
+
+11.Rulează în mod sigur.
+Începe cu backtesting.
+Continuă cu paper trading.
+Trece pe bani reali doar după validare.
+
+
+Dacă botul face corect aceste lucruri, am o bază solidă.
+De aici pot adăuga AI mai complex.
