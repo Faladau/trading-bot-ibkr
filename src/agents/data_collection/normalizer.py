@@ -73,7 +73,7 @@ class DataNormalizer:
                     "start": bars[0].timestamp.strftime('%Y-%m-%d %H:%M:%S'),
                     "end": bars[-1].timestamp.strftime('%Y-%m-%d %H:%M:%S'),
                     "total_bars": len(bars),
-                    "date_generated": datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+                    "date_generated": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
                 },
                 "metadata": {
                     "source": bars[0].source if bars else "UNKNOWN",

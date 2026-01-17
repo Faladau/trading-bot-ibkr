@@ -49,7 +49,7 @@ python src/main.py --mode paper --config config/config.yaml
 
 ## 📁 Structură Proiect
 
-Arhitectură modulară pe agenți separați. Vezi [STRUCTURE.md](STRUCTURE.md) și [ARCHITECTURE.md](ARCHITECTURE.md) pentru detalii complete.
+Arhitectură modulară pe agenți separați. Vezi [STRUCTURE.md](specifications/STRUCTURE.md) și [ARCHITECTURE.md](specifications/ARCHITECTURE.md) pentru detalii complete.
 
 ```
 trading_bot/
