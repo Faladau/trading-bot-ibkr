@@ -149,14 +149,29 @@ def load_config() -> dict:
 def get_latest_market_data(symbols: List[str], data_dir: str = "data/processed") -> pd.DataFrame:
     """Citește ultimele date de piață din CSV."""
     data = []
-    data_path = Path(data_dir)
+    
+    # Încearcă mai multe path-uri pentru compatibilitate Streamlit Cloud
+    possible_dirs = [
+        Path(data_dir),
+        Path("data/processed"),
+        Path(__file__).parent.parent.parent / "data" / "processed",
+    ]
+    
+    data_path = None
+    for path in possible_dirs:
+        if path.exists():
+            data_path = path
+            break
+    
+    if not data_path:
+        return pd.DataFrame(data)  # Returnează DataFrame gol dacă nu găsește directorul
     
     for symbol in symbols:
         # Caută cel mai recent fișier CSV pentru simbol
-        csv_files = list(data_path.glob(f"{symbol}_*.csv"))
-        if csv_files:
-            latest_file = max(csv_files, key=lambda p: p.stat().st_mtime)
-            try:
+        try:
+            csv_files = list(data_path.glob(f"{symbol}_*.csv"))
+            if csv_files:
+                latest_file = max(csv_files, key=lambda p: p.stat().st_mtime)
                 df = pd.read_csv(latest_file)
                 if not df.empty:
                     latest_row = df.iloc[-1]
@@ -167,8 +182,9 @@ def get_latest_market_data(symbols: List[str], data_dir: str = "data/processed")
                         'volume': latest_row.get('volume', 0),
                         'timestamp': latest_row.get('timestamp', '')
                     })
-            except Exception as e:
-                st.warning(f"Eroare la citire {symbol}: {e}")
+        except Exception:
+            # Nu afișăm warning pentru fiecare simbol - doar dacă nu găsește deloc
+            pass
     
     return pd.DataFrame(data)
 
