@@ -8,7 +8,7 @@ Botul de trading trebuie să facă lucruri simple și clare. Totul automat. Făr
 ✅ STRUCTURĂ: Agenți în foldere separate (data_collection/, decision/, execution/) cu teste dedicate
 ✅ DATA COLLECTION AGENT: Implementat complet (IBKR source, normalizer, validator, orchestrator) - 7 teste trec
 ✅ YAHOO FINANCE BACKUP: Implementat YahooDataSource - funcționează fără cont
-✅ STREAMLIT DASHBOARD: UI responsive pentru mobile/desktop - ready pentru Streamlit Cloud
+✅ STREAMLIT DASHBOARD: UI responsive pentru mobile/desktop - implementat complet cu START/STOP funcțional, deploy pe Streamlit Cloud
 
 1.Se conectează la broker.
 Se conectează la Interactive Brokers prin API.
