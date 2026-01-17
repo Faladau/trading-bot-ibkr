@@ -32,6 +32,21 @@ risk:
   daily_loss_limit: 0.05    # 5% pierdere zilnică = stop
   max_trades_per_day: 10
 
+data_collector:
+  symbols:
+    - AAPL
+    - MSFT
+    - AMD
+  timeframe: "1H"
+  lookback_days: 60
+  data_source: "IBKR"
+  backup_source: "YAHOO"
+  output_format: ["csv", "json"]
+  data_dir: "data/processed"
+  market: "US"
+  useRTH: true
+  normalize_splits: true
+
 logging:
   level: INFO
   file: data/logs/trading.log

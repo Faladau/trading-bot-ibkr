@@ -1,16 +1,185 @@
 """
-Data Collection Agent
-Colectează date brute de piață, fără interpretare sau logică de business.
-
-Responsabilități:
-1. Inițializează conexiunea IBKR
-2. Citește lista de simboluri din config
-3. Colectează date OHLCV pentru fiecare simbol
-4. Verifică completitudinea datelor
-5. Normalizează formatul
-6. Salvează datele local (CSV/JSON)
-
-⚠️ IMPORTANT: Data Collection Agent este 100% market data. Nu verifică sold, capital sau orice legat de bani.
+Data Collection Agent - Orchestrator principal pentru colectare date
 """
 
-# TODO: Implementare Agent 1 conform v6.0
+from typing import List, Optional
+import asyncio
+from pathlib import Path
+from datetime import datetime
+
+from src.common.utils.config_loader import ConfigLoader
+from src.common.logging_utils.logger import get_logger
+from src.common.models.market_data import Bar
+
+from src.agents.data_collection.sources.ibkr_source import IBKRDataSource
+from src.agents.data_collection.sources.base_source import BaseDataSource
+from src.agents.data_collection.normalizer import DataNormalizer
+from src.agents.data_collection.validator import DataValidator
+
+
+class DataCollectionAgent:
+    """Orchestrator principal pentru colectare date."""
+    
+    def __init__(self, config_path: Optional[str] = None):
+        """
+        Inițializează Data Collection Agent.
+        
+        Args:
+            config_path: Cale către fișier config (default: config/config.yaml)
+        """
+        self.config_loader = ConfigLoader()
+        if config_path:
+            self.config = self.config_loader.load_config(config_path)
+        else:
+            self.config = self.config_loader.load_config("config.yaml")
+        
+        self.data_source: Optional[BaseDataSource] = None
+        self.normalizer = DataNormalizer()
+        self.validator = DataValidator()
+        self.logger = get_logger(__name__)
+    
+    async def initialize(self) -> bool:
+        """Inițializare conexiuni și setup.
+        
+        Returns:
+            True dacă inițializarea reușește
+        """
+        try:
+            # Obține config data_collector
+            data_collector_config = self.config.get("data_collector", {})
+            ibkr_config = self.config.get("ibkr", {})
+            
+            # Conectează la IBKR
+            self.data_source = IBKRDataSource(
+                host=ibkr_config.get("host", "127.0.0.1"),
+                port=ibkr_config.get("port", 7497),
+                clientId=ibkr_config.get("clientId", 1)
+            )
+            
+            connected = await self.data_source.connect()
+            if not connected:
+                self.logger.error("Failed to connect to IBKR")
+                return False
+            
+            # Crează output directories
+            data_dir = data_collector_config.get("data_dir", "data/processed")
+            Path(data_dir).mkdir(parents=True, exist_ok=True)
+            
+            self.logger.info("DataCollectionAgent initialized successfully")
+            return True
+        except Exception as e:
+            self.logger.error(f"Initialization error: {e}")
+            return False
+    
+    async def collect_all(self) -> bool:
+        """Colectează date pentru toate simbolurile.
+        
+        Returns:
+            True dacă colectarea reușește
+        """
+        try:
+            data_collector_config = self.config.get("data_collector", {})
+            symbols = data_collector_config.get("symbols", [])
+            timeframe = data_collector_config.get("timeframe", "1H")
+            lookback_days = data_collector_config.get("lookback_days", 60)
+            useRTH = data_collector_config.get("useRTH", True)
+            
+            if not symbols:
+                self.logger.warning("No symbols configured")
+                return False
+            
+            for symbol in symbols:
+                self.logger.info(f"Collecting {symbol}...")
+                
+                # Fetch
+                bars = await self.data_source.fetch_historical_data(
+                    symbol=symbol,
+                    timeframe=timeframe,
+                    lookback_days=lookback_days,
+                    useRTH=useRTH
+                )
+                
+                if not bars:
+                    self.logger.warning(f"No data for {symbol}")
+                    continue
+                
+                # Validate
+                valid_count, invalid_count = self.validator.validate_bars(bars)
+                self.logger.info(f"{symbol}: {valid_count} valid, {invalid_count} invalid")
+                
+                # Save
+                await self._save_bars(symbol, bars, data_collector_config)
+                
+                # Pace limit IBKR (min 10 sec între requests)
+                self.logger.info(f"Waiting 10 seconds before next request (IBKR pacing limit)...")
+                await asyncio.sleep(10)
+            
+            self.logger.info("Collection completed")
+            return True
+        except Exception as e:
+            self.logger.error(f"Collection error: {e}")
+            return False
+    
+    async def _save_bars(self, symbol: str, bars: List[Bar], config: dict) -> bool:
+        """Salvează bars în format CSV + JSON.
+        
+        Args:
+            symbol: Simbol stoc
+            bars: Lista de Bar-uri
+            config: Configurație data_collector
+        """
+        try:
+            timeframe = config.get("timeframe", "1H")
+            data_dir = config.get("data_dir", "data/processed")
+            output_format = config.get("output_format", ["csv", "json"])
+            
+            # Filename
+            date_str = datetime.utcnow().strftime('%Y%m%d')
+            base_name = f"{data_dir}/{symbol}_{timeframe}_{date_str}"
+            
+            # CSV
+            if "csv" in output_format:
+                csv_path = f"{base_name}.csv"
+                self.normalizer.bars_to_csv(bars, csv_path)
+            
+            # JSON
+            if "json" in output_format:
+                json_path = f"{base_name}.json"
+                self.normalizer.bars_to_json(bars, json_path, symbol, timeframe)
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"Save error: {e}")
+            return False
+    
+    async def shutdown(self) -> bool:
+        """Dezactivare controlată.
+        
+        Returns:
+            True dacă shutdown-ul reușește
+        """
+        try:
+            if self.data_source:
+                await self.data_source.disconnect()
+            self.logger.info("DataCollectionAgent shutdown completed")
+            return True
+        except Exception as e:
+            self.logger.error(f"Shutdown error: {e}")
+            return False
+
+
+# Entry point
+async def main(config_path: Optional[str] = None):
+    """Entry point pentru rulare standalone."""
+    collector = DataCollectionAgent(config_path)
+    if await collector.initialize():
+        await collector.collect_all()
+        await collector.shutdown()
+    else:
+        print("Failed to initialize collector")
+
+
+if __name__ == "__main__":
+    import sys
+    config_file = sys.argv[1] if len(sys.argv) > 1 else "config/config.yaml"
+    asyncio.run(main(config_file))

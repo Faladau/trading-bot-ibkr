@@ -2,7 +2,7 @@
 Market Data Models - Bar, Quote, Tick
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
@@ -17,6 +17,15 @@ class Bar:
     low: float
     close: float
     volume: int
+    
+    # Câmpuri opționale pentru Data Collection Agent
+    symbol: Optional[str] = None
+    timeframe: Optional[str] = None
+    count: Optional[int] = None          # Număr tranzacții în perioada
+    wap: Optional[float] = None          # Weighted Average Price
+    hasGaps: Optional[bool] = None       # Dacă bar are gap-uri în date
+    source: Optional[str] = None         # Sursă date: IBKR, YAHOO, ALPHA, etc.
+    normalized: Optional[bool] = None    # Dacă datele au fost normalizate
     
     def __post_init__(self):
         """Validare după inițializare"""
@@ -48,13 +57,49 @@ class Bar:
     
     def to_dict(self) -> dict:
         """Convertește la dict pentru serializare"""
-        return {
+        result = {
             "timestamp": self.timestamp.isoformat(),
             "open": self.open,
             "high": self.high,
             "low": self.low,
             "close": self.close,
             "volume": self.volume
+        }
+        
+        # Adaugă câmpurile opționale dacă există
+        if self.symbol is not None:
+            result["symbol"] = self.symbol
+        if self.timeframe is not None:
+            result["timeframe"] = self.timeframe
+        if self.count is not None:
+            result["count"] = self.count
+        if self.wap is not None:
+            result["wap"] = self.wap
+        if self.hasGaps is not None:
+            result["hasGaps"] = self.hasGaps
+        if self.source is not None:
+            result["source"] = self.source
+        if self.normalized is not None:
+            result["normalized"] = self.normalized
+        
+        return result
+    
+    def to_csv_dict(self) -> dict:
+        """Convertește la dict pentru export CSV (toate câmpurile)"""
+        return {
+            "symbol": self.symbol or "",
+            "timeframe": self.timeframe or "",
+            "timestamp": self.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            "open": round(self.open, 2),
+            "high": round(self.high, 2),
+            "low": round(self.low, 2),
+            "close": round(self.close, 2),
+            "volume": self.volume,
+            "count": self.count or 0,
+            "wap": round(self.wap, 2) if self.wap else 0.0,
+            "hasGaps": self.hasGaps if self.hasGaps is not None else False,
+            "source": self.source or "",
+            "normalized": self.normalized if self.normalized is not None else False
         }
 
 
