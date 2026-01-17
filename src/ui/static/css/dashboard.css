@@ -6,10 +6,51 @@
 
 .stApp {
     background: #1a1a2e !important;
-    color: #ffffff;
+    color: #ffffff !important;
     position: relative;
     overflow: hidden;
     min-height: 100vh;
+}
+
+/* Force white text pentru toate elementele */
+.stApp * {
+    color: #ffffff !important;
+}
+
+/* Override pentru Streamlit default text colors */
+.stApp p,
+.stApp h1,
+.stApp h2,
+.stApp h3,
+.stApp h4,
+.stApp h5,
+.stApp h6,
+.stApp div,
+.stApp span,
+.stApp label {
+    color: #ffffff !important;
+}
+
+/* Override pentru Streamlit metric labels și values */
+[data-testid="stMetricLabel"],
+[data-testid="stMetricValue"],
+[data-testid="stMetricDelta"] {
+    color: #ffffff !important;
+}
+
+/* Override pentru Streamlit subheader */
+.stApp h3 {
+    color: #ffffff !important;
+}
+
+/* Override pentru Streamlit caption */
+.stApp .stCaption {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Override pentru Streamlit text */
+.stApp .stText {
+    color: #ffffff !important;
 }
 
 /* Container principal pe 80% din pagină */

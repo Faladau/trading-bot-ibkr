@@ -124,16 +124,31 @@ def main():
     state = DashboardState()
     config = load_config()
     
-    # Background simplu dark, fără mov
+    # Background simplu dark, fără mov + text alb forțat
     st.markdown("""
     <style>
     .stApp {
         background: #1a1a2e !important;
+        color: #ffffff !important;
+    }
+    .stApp * {
+        color: #ffffff !important;
     }
     .main-content {
         max-width: 80%;
         margin: 0 auto;
         padding: 2rem;
+    }
+    /* Force white text pentru toate elementele Streamlit */
+    [data-testid="stMetricLabel"],
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricDelta"],
+    .stApp h1, .stApp h2, .stApp h3, .stApp h4,
+    .stApp p, .stApp div, .stApp span, .stApp label {
+        color: #ffffff !important;
+    }
+    .stApp .stCaption {
+        color: rgba(255, 255, 255, 0.9) !important;
     }
     </style>
     """, unsafe_allow_html=True)

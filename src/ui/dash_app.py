@@ -46,11 +46,17 @@ if css_path.exists():
         <head>
             {{%metas%}}
             <title>Trading Bot v6.2 Dashboard</title>
-            <style>{css_content}</style>
+            <style>
+                {css_content}
+                /* Force white text pentru Dash */
+                body, * {{
+                    color: #ffffff !important;
+                }}
+            </style>
             {{%favicon%}}
             {{%css%}}
         </head>
-        <body>
+        <body style="background: #1a1a2e; color: #ffffff;">
             {{%app_entry%}}
             <footer>
                 {{%config%}}
