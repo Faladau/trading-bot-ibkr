@@ -9,6 +9,7 @@ Botul de trading trebuie să facă lucruri simple și clare. Totul automat. Făr
 ✅ DATA COLLECTION AGENT: Implementat complet (IBKR source, normalizer, validator, orchestrator) - 7 teste trec
 ✅ YAHOO FINANCE BACKUP: Implementat YahooDataSource - funcționează fără cont
 ✅ STREAMLIT DASHBOARD: UI responsive pentru mobile/desktop - implementat complet cu START/STOP funcțional, deploy pe Streamlit Cloud
+✅ DASH/PLOTLY DASHBOARD: Migrare la Dash pentru deployment pe server propriu - implementat complet (dash_app.py, components, callbacks, run_dash.py, README_DASH.md)
 
 1.Se conectează la broker.
 Se conectează la Interactive Brokers prin API.
