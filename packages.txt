@@ -1,2 +1,5 @@
 # System packages pentru Streamlit Cloud
-# Nu e necesar pentru majoritatea proiectelor, dar poți adăuga aici dacă ai nevoie
+# Dacă ai nevoie de pachete system specifice, adaugă-le aici (unul pe linie)
+# Exemplu:
+# libgomp1
+# libgfortran5
