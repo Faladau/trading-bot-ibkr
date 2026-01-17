@@ -124,7 +124,7 @@ def main():
     state = DashboardState()
     config = load_config()
     
-    # Background simplu dark, fără mov + text alb forțat
+    # Background simplu dark, fără mov + text alb forțat + layout 80%
     st.markdown("""
     <style>
     .stApp {
@@ -134,10 +134,16 @@ def main():
     .stApp * {
         color: #ffffff !important;
     }
-    .main-content {
-        max-width: 80%;
-        margin: 0 auto;
-        padding: 2rem;
+    /* Force 80% width pentru container principal - IMPORTANT pentru refresh */
+    section[data-testid="stAppViewContainer"] {
+        max-width: 80% !important;
+        margin: 0 auto !important;
+        padding: 2rem !important;
+    }
+    .main .block-container {
+        max-width: 80% !important;
+        margin: 0 auto !important;
+        padding: 2rem !important;
     }
     /* Force white text pentru toate elementele Streamlit */
     [data-testid="stMetricLabel"],
