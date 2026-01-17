@@ -49,7 +49,7 @@ python src/main.py --mode paper --config config/config.yaml
 
 ## 📁 Structură Proiect
 
-Arhitectură modulară pe straturi funcționale. Vezi [ARCHITECTURE.md](ARCHITECTURE.md) pentru detalii complete.
+Arhitectură modulară pe agenți separați. Vezi [STRUCTURE.md](STRUCTURE.md) și [ARCHITECTURE.md](ARCHITECTURE.md) pentru detalii complete.
 
 ```
 trading_bot/
@@ -61,22 +61,37 @@ trading_bot/
 │
 ├── src/
 │   ├── main.py                  # Entry point - orchestrator
-│   ├── models/                  # Entități de date (DTOs)
-│   ├── broker/                  # Infrastructură I/O (IBKR)
-│   ├── strategy/                # Logică trading
-│   ├── risk/                    # Management risc
-│   ├── services/                # Servicii de orchestrare
+│   │
+│   ├── agents/                  # 🎯 Agenți (fiecare în folder separat)
+│   │   ├── agent1/              # Data Collection
+│   │   ├── agent2/              # Decision
+│   │   └── agent3/              # Execution
+│   │
+│   ├── common/                  # 🔧 Module comune
+│   │   ├── broker/              # IBKR connection & data
+│   │   ├── strategy/            # Technical analysis
+│   │   ├── risk/                # Risk management
+│   │   ├── models/              # Data models (Bar, Signal, Trade)
+│   │   ├── logging_utils/       # Logging
+│   │   └── utils/               # Helpers, validators, config
+│   │
+│   ├── services/                # Orchestration
 │   ├── backtest/                # Backtesting
-│   ├── storage/                 # Persistență (Repository)
-│   ├── logging_utils/           # Logging
-│   └── utils/                   # Utilitare
+│   └── storage/                 # Persistence
+│
+├── tests/
+│   ├── agent1/                  # 🧪 Teste Agent 1
+│   ├── agent2/                  # 🧪 Teste Agent 2
+│   ├── agent3/                  # 🧪 Teste Agent 3
+│   ├── common/                  # 🧪 Teste module comune
+│   └── integration/             # 🧪 Teste integrare
 │
 ├── data/
 │   ├── historical/              # Date istorice (CSV)
-│   ├── backtests/               # Rezultate backtests
+│   ├── signals/                 # Semnale generate (JSON)
+│   ├── trades/                  # Trade-uri completate (JSON)
 │   └── logs/                    # Log-uri
 │
-├── tests/                       # Teste
 ├── requirements.txt             # Dependențe Python
 └── README.md                    # Acest fișier
 ```
@@ -101,7 +116,7 @@ trading_bot/
 
 ## 📖 Specificație
 
-Vezi `specifications/Specificatie_Trading_Bot_v5.1.md` pentru documentația completă.
+Vezi `specifications/Specificatie_Trading_Bot_v6.0.md` pentru documentația completă (versiunea actuală).
 
 ---
 
