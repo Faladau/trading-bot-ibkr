@@ -206,15 +206,6 @@ class DataCollectionAgent:
             except ImportError as e:
                 self.logger.error(f"Cannot create Yahoo source: {e}")
                 return None
-        elif source_name_upper == "IBKR":
-            # Lazy import pentru a evita event loop issues în Streamlit
-            from src.agents.data_collection.sources.ibkr_source import IBKRDataSource
-            ibkr_config = self.config.get("ibkr", {})
-            return IBKRDataSource(
-                host=ibkr_config.get("host", "127.0.0.1"),
-                port=ibkr_config.get("port", 7497),
-                clientId=ibkr_config.get("clientId", 1)
-            )
         else:
             self.logger.warning(f"Unknown backup source: {source_name}")
             return None
