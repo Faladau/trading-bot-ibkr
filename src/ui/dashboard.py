@@ -104,8 +104,9 @@ st.markdown("""
         overflow: hidden;
     }
     
-    /* SVG background overlay */
-    .trading-bg-overlay {
+    /* Pattern-uri decorative de trading în background */
+    .stApp::after {
+        content: '';
         position: fixed;
         top: 0;
         left: 0;
@@ -113,7 +114,38 @@ st.markdown("""
         height: 100%;
         z-index: 0;
         pointer-events: none;
-        opacity: 0.15;
+        opacity: 0.1;
+        background-image: 
+            /* Grid pattern */
+            repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 60px,
+                rgba(102, 126, 234, 0.2) 60px,
+                rgba(102, 126, 234, 0.2) 61px
+            ),
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 60px,
+                rgba(102, 126, 234, 0.2) 60px,
+                rgba(102, 126, 234, 0.2) 61px
+            ),
+            /* Linii diagonale de trend */
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 200px,
+                rgba(118, 75, 162, 0.15) 200px,
+                rgba(118, 75, 162, 0.15) 201px
+            ),
+            repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 250px,
+                rgba(76, 175, 80, 0.15) 250px,
+                rgba(76, 175, 80, 0.15) 251px
+            );
     }
     
     /* Pattern-uri CSS suplimentare */
@@ -537,12 +569,9 @@ def main():
     state = DashboardState()
     config = load_config()
     
-    # Adaugă SVG cu grafice financiare în background (overlay peste background image)
-    st.markdown(f"""
-    <div class="trading-bg-overlay">
-        {TRADING_CHART_SVG}
-    </div>
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 12, 41, 0.85) 0%, rgba(48, 43, 99, 0.85) 50%, rgba(36, 36, 62, 0.85) 100%); z-index: 0; pointer-events: none;"></div>
+    # Adaugă overlay gradient peste background
+    st.markdown("""
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 12, 41, 0.9) 0%, rgba(48, 43, 99, 0.9) 50%, rgba(36, 36, 62, 0.9) 100%); z-index: 0; pointer-events: none;"></div>
     """, unsafe_allow_html=True)
     
     # Header cu gradient
