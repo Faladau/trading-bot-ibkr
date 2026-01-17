@@ -1289,17 +1289,22 @@ cat ../strategy_engine/output/AAPL_signals.json
 ## 11. UI DASHBOARD — STREAMLIT
 
 ### 11.1 Scop Dashboard
-Dashboard responsive (mobile + desktop) pentru monitorizare și control trading bot în timp real.
+Dashboard responsive (mobile + desktop) pentru **monitorizare** trading bot. Optimizat pentru verificare 1-2x pe zi, nu pentru trading live continuu.
 
 **Funcționalități principale:**
-- ✅ Status agenți live (Agent 1, 2, 3) — ACTIVE/IDLE/MONITORING/ERROR
+- ✅ **Background atractiv** — gradient modern, dark theme, nu alb plictisitor
+- ✅ Status agenți (Agent 1, 2, 3) — ACTIVE/IDLE/MONITORING/ERROR
 - ✅ Live market data (citește din CSV-uri generate de Agent 1)
-- ✅ Performance metrics (PnL daily/weekly/total, Win Rate, Sharpe Ratio)
-- ✅ Controls (START/STOP/PAUSE/RESET) — pornește efectiv Agent 1
-- ✅ Activity logs realtime
-- ✅ Configuration display
+- ✅ **Metrici esențiale** — P&L Total, Win Rate, Max Drawdown, Poziții Active
+- ✅ Activity logs (ultimele acțiuni)
+- ✅ Configuration display (read-only)
 - ✅ Responsive design (funcționează pe telefon)
 - ✅ Deploy GRATUIT pe Streamlit Cloud
+
+**Focus:**
+- **Monitorizare** — vezi status, performanță, poziții
+- **Verificare 1-2x pe zi** — nu necesită refresh continuu
+- **Vizual atractiv** — background gradient, culori moderne, design clean
 
 ### 11.2 Structură Dashboard
 
@@ -1352,17 +1357,26 @@ Dashboard responsive (mobile + desktop) pentru monitorizare și control trading 
 #### 11.3.3 Performance Metrics
 **Locație**: Top Right
 
-**Metrici afișate:**
-- **Daily PnL** — Profit/Pierdere zilnică
-- **Weekly PnL** — Profit/Pierdere săptămânală
-- **Total PnL** — Profit/Pierdere totală
+**Metrici esențiale (prioritizate):**
+- **Total PnL** — Profit/Pierdere totală (CEA MAI IMPORTANTĂ)
 - **Win Rate** — Procent trade-uri profitabile
-- **Sharpe Ratio** — Măsură risk-adjusted return
+- **Max Drawdown** — Cea mai mare scădere (indicator de risc)
+- **Poziții Active** — Număr poziții deschise acum
+
+**Metrici secundare (opțional):**
+- Daily PnL, Weekly PnL, Sharpe Ratio
 
 **Sursă date**: `data/trades/*.json` (trade-uri completate)
 
-#### 11.3.4 Controls
-**Locație**: Bottom Left
+**Design:**
+- Metrici principale în carduri mari, vizibile
+- Color coding: verde (profit), roșu (pierdere)
+- Iconuri pentru claritate vizuală
+
+#### 11.3.4 Controls (Opțional - Focus pe Monitorizare)
+**Locație**: Bottom Left (secundar)
+
+**Notă:** Dashboard-ul este optimizat pentru **monitorizare**, nu pentru control activ. Butoanele sunt disponibile dar nu sunt prioritare.
 
 **Butoane:**
 - **▶️ START** (Primary) — Pornește Agent 1 în background
@@ -1375,11 +1389,8 @@ Dashboard responsive (mobile + desktop) pentru monitorizare și control trading 
 - **⏹️ STOP** (Secondary) — Oprește bot-ul
   - Setează toți agenții la IDLE
   - Oprește execuția
-  
-- **⏸️ PAUSE** — Pause (coming soon)
-- **🔄 RESET** — Resetează dashboard state
 
-**Configuration Display:**
+**Configuration Display (Read-Only):**
 - Mode: PAPER/LIVE
 - Risk Level: Medium
 - Max Position: $50k
@@ -1403,42 +1414,54 @@ Dashboard responsive (mobile + desktop) pentru monitorizare și control trading 
 14:22:18: System: All agents initialized
 ```
 
-### 11.4 Funcționalități Tehnice
+### 11.4 Design Vizual
 
-#### 11.4.1 Execuție Agent 1
-Când se apasă START:
+#### 11.4.1 Background Atractiv
+**Gradient Modern:**
+- Background: gradient linear de la `#0f0c29` (dark blue) → `#302b63` (purple) → `#24243e` (dark)
+- Sau: gradient de la `#1e3c72` (blue) → `#2a5298` (lighter blue)
+- Carduri: background semi-transparent cu blur (`rgba(255, 255, 255, 0.1)` cu `backdrop-filter: blur(10px)`)
+- Border: subtle glow pentru carduri importante
+
+**Dark Theme:**
+- Text: alb/light gray pentru contrast
+- Accent colors: verde (profit), roșu (pierdere), albastru (info)
+- Shadows: subtle pentru depth
+
+#### 11.4.2 Layout Optimizat pentru Verificare 1-2x pe Zi
+- **Header**: Status agenți + ultima actualizare (mare, vizibil)
+- **Metrici principale**: Carduri mari cu Total PnL, Win Rate, Max Drawdown
+- **Poziții active**: Listă clară cu P&L per poziție
+- **Activity log**: Ultimele 10-15 acțiuni (nu necesită scroll infinit)
+
+**Nu necesită:**
+- Auto-refresh agresiv (doar manual sau opțional)
+- Real-time updates (datele se actualizează când rulează Agent 1)
+
+#### 11.4.3 Funcționalități Tehnice
+
+**Execuție Agent 1:**
 ```python
-# Creează thread separat
+# Când se apasă START (opțional)
 thread = threading.Thread(target=run_agent1, daemon=True)
 thread.start()
-
-# Rulează Agent 1
-agent = DataCollectionAgent()
-await agent.initialize()
-await agent.collect_all()  # Colectează date Yahoo Finance
-await agent.shutdown()
 ```
 
-#### 11.4.2 Auto-Refresh
-- **Când bot rulează**: Refresh la fiecare 10 secunde
-- **Când bot e idle**: Checkbox "Auto-refresh (30s)" opțional
+**Refresh:**
+- **Manual**: Buton "🔄 Refresh" când vrei să verifici
+- **Opțional**: Checkbox "Auto-refresh (60s)" pentru verificare periodică
+- **Nu**: Refresh continuu (nu e necesar pentru verificare 1-2x pe zi)
 
-#### 11.4.3 Path Handling
-Dashboard-ul încearcă mai multe path-uri pentru compatibilitate:
+**Path Handling:**
 - `config/config.yaml` (local development)
 - `config.yaml` (root)
 - Absolute path (Streamlit Cloud)
+- Default config dacă nu găsește
 
-**Dacă nu găsește config**: Folosește config default (AAPL, MSFT, mode: paper)
-
-#### 11.4.4 Responsive Design
-**CSS Custom:**
-- Mobile: Butoane full-width, layout stacked
-- Tablet: Layout adaptiv
-- Desktop: 2x2 grid
-
-**Breakpoints:**
-- `@media (max-width: 768px)` — Mobile optimizat
+**Responsive Design:**
+- Mobile: Stack vertical, carduri full-width
+- Desktop: 2-3 coloane, layout optimizat
+- CSS: Gradient background, carduri glassmorphism
 
 ### 11.5 Deploy Streamlit Cloud
 

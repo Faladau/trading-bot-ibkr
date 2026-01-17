@@ -1,6 +1,7 @@
 """
 Trading Bot Dashboard - Streamlit UI
-Responsive dashboard pentru monitorizare agenți și trading
+Dashboard atractiv pentru monitorizare trading bot
+Optimizat pentru verificare 1-2x pe zi
 """
 
 import streamlit as st
@@ -26,10 +27,90 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS pentru responsive design
+# Custom CSS cu background atractiv și design modern
 st.markdown("""
 <style>
-    /* Responsive design pentru mobile */
+    /* Background gradient atractiv */
+    .stApp {
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        color: #ffffff;
+    }
+    
+    /* Carduri glassmorphism */
+    .metric-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        margin-bottom: 1rem;
+    }
+    
+    /* Status indicators cu glow */
+    .status-active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .status-idle {
+        background: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+    
+    .status-monitoring {
+        background: rgba(23, 162, 184, 0.2);
+        color: #17a2b8;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        border: 1px solid rgba(23, 162, 184, 0.3);
+    }
+    
+    .status-error {
+        background: rgba(220, 53, 69, 0.2);
+        color: #dc3545;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: bold;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+    
+    /* Metric styling */
+    [data-testid="stMetricValue"] {
+        color: #ffffff;
+        font-size: 2rem;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    /* Butoane moderne */
+    .stButton>button {
+        border-radius: 10px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Responsive design */
     @media (max-width: 768px) {
         .stMetric {
             padding: 0.5rem;
@@ -40,41 +121,17 @@ st.markdown("""
         }
     }
     
-    /* Status indicators */
-    .status-active {
-        background-color: #d4edda;
-        color: #155724;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-        text-align: center;
-        font-weight: bold;
+    /* Text color pentru dark background */
+    h1, h2, h3, h4, h5, h6, p, .stText {
+        color: #ffffff;
     }
     
-    .status-idle {
-        background-color: #fff3cd;
-        color: #856404;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-        text-align: center;
-        font-weight: bold;
-    }
-    
-    .status-monitoring {
-        background-color: #d1ecf1;
-        color: #0c5460;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-        text-align: center;
-        font-weight: bold;
-    }
-    
-    .status-error {
-        background-color: #f8d7da;
-        color: #721c24;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-        text-align: center;
-        font-weight: bold;
+    /* Container styling */
+    .main-container {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -99,19 +156,16 @@ class DashboardState:
 def load_config() -> dict:
     """Încarcă configurația."""
     try:
-        # Încearcă mai multe path-uri pentru compatibilitate Streamlit Cloud
         from pathlib import Path
         
-        # Path-uri posibile
         possible_paths = [
-            "config/config.yaml",  # Local development
-            "config.yaml",  # Root
-            Path(__file__).parent.parent.parent / "config" / "config.yaml",  # Absolute
+            "config/config.yaml",
+            "config.yaml",
+            Path(__file__).parent.parent.parent / "config" / "config.yaml",
         ]
         
         config_loader = ConfigLoader()
         
-        # Încearcă fiecare path
         for config_path in possible_paths:
             try:
                 if isinstance(config_path, Path):
@@ -124,7 +178,6 @@ def load_config() -> dict:
             except Exception:
                 continue
         
-        # Dacă nu găsește, returnează config default
         st.warning("Config file not found, using default settings")
         return {
             'symbols': ['AAPL', 'MSFT'],
@@ -137,7 +190,6 @@ def load_config() -> dict:
         }
     except Exception as e:
         st.error(f"Eroare la încărcare config: {e}")
-        # Returnează config default în caz de eroare
         return {
             'symbols': ['AAPL', 'MSFT'],
             'app': {'mode': 'paper'},
@@ -153,7 +205,6 @@ def get_latest_market_data(symbols: List[str], data_dir: str = "data/processed")
     """Citește ultimele date de piață din CSV."""
     data = []
     
-    # Încearcă mai multe path-uri pentru compatibilitate Streamlit Cloud
     possible_dirs = [
         Path(data_dir),
         Path("data/processed"),
@@ -167,10 +218,9 @@ def get_latest_market_data(symbols: List[str], data_dir: str = "data/processed")
             break
     
     if not data_path:
-        return pd.DataFrame(data)  # Returnează DataFrame gol dacă nu găsește directorul
+        return pd.DataFrame(data)
     
     for symbol in symbols:
-        # Caută cel mai recent fișier CSV pentru simbol
         try:
             csv_files = list(data_path.glob(f"{symbol}_*.csv"))
             if csv_files:
@@ -178,36 +228,25 @@ def get_latest_market_data(symbols: List[str], data_dir: str = "data/processed")
                 df = pd.read_csv(latest_file)
                 if not df.empty:
                     latest_row = df.iloc[-1]
+                    # Calculează change % față de penultimul bar
+                    if len(df) > 1:
+                        prev_close = df.iloc[-2].get('close', latest_row.get('close', 0))
+                        current_close = latest_row.get('close', 0)
+                        change_pct = ((current_close - prev_close) / prev_close * 100) if prev_close > 0 else 0.0
+                    else:
+                        change_pct = 0.0
+                    
                     data.append({
                         'symbol': symbol,
                         'price': latest_row.get('close', 0),
-                        'change_pct': 0.0,  # TODO: calculează din date
+                        'change_pct': change_pct,
                         'volume': latest_row.get('volume', 0),
                         'timestamp': latest_row.get('timestamp', '')
                     })
         except Exception:
-            # Nu afișăm warning pentru fiecare simbol - doar dacă nu găsește deloc
             pass
     
     return pd.DataFrame(data)
-
-
-def get_recent_signals(data_dir: str = "data/signals") -> List[dict]:
-    """Citește semnale recente."""
-    signals = []
-    signals_path = Path(data_dir)
-    
-    if signals_path.exists():
-        json_files = sorted(signals_path.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-        for json_file in json_files[:10]:  # Ultimele 10
-            try:
-                with open(json_file, 'r') as f:
-                    signal = json.load(f)
-                    signals.append(signal)
-            except Exception:
-                pass
-    
-    return signals
 
 
 def get_recent_trades(data_dir: str = "data/trades") -> List[dict]:
@@ -217,7 +256,7 @@ def get_recent_trades(data_dir: str = "data/trades") -> List[dict]:
     
     if trades_path.exists():
         json_files = sorted(trades_path.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
-        for json_file in json_files[:10]:  # Ultimele 10
+        for json_file in json_files[:50]:  # Ultimele 50 pentru calcul metrici
             try:
                 with open(json_file, 'r') as f:
                     trade = json.load(f)
@@ -229,23 +268,71 @@ def get_recent_trades(data_dir: str = "data/trades") -> List[dict]:
 
 
 def calculate_metrics(trades: List[dict]) -> dict:
-    """Calculează metrici de performanță."""
+    """Calculează metrici de performanță esențiale."""
     if not trades:
         return {
-            'daily_pnl': 0.0,
-            'weekly_pnl': 0.0,
             'total_pnl': 0.0,
             'win_rate': 0.0,
-            'sharpe_ratio': 0.0
+            'max_drawdown': 0.0,
+            'active_positions': 0,
+            'daily_pnl': 0.0,
+            'weekly_pnl': 0.0
         }
     
-    # TODO: Implementare calcul real
+    # Calculează P&L total
+    total_pnl = sum(trade.get('pnl', 0) for trade in trades if trade.get('status') == 'closed')
+    
+    # Calculează Win Rate
+    closed_trades = [t for t in trades if t.get('status') == 'closed']
+    if closed_trades:
+        winning_trades = [t for t in closed_trades if t.get('pnl', 0) > 0]
+        win_rate = (len(winning_trades) / len(closed_trades)) * 100
+    else:
+        win_rate = 0.0
+    
+    # Calculează Max Drawdown (simplificat)
+    pnl_values = [t.get('pnl', 0) for t in closed_trades]
+    if pnl_values:
+        cumulative = []
+        running_sum = 0
+        for pnl in pnl_values:
+            running_sum += pnl
+            cumulative.append(running_sum)
+        
+        if cumulative:
+            peak = cumulative[0]
+            max_dd = 0.0
+            for value in cumulative:
+                if value > peak:
+                    peak = value
+                dd = ((peak - value) / peak * 100) if peak > 0 else 0.0
+                if dd > max_dd:
+                    max_dd = dd
+        else:
+            max_dd = 0.0
+    else:
+        max_dd = 0.0
+    
+    # Poziții active
+    active_positions = len([t for t in trades if t.get('status') == 'open'])
+    
+    # P&L zilnic/săptămânal (simplificat)
+    today = datetime.now().date()
+    week_ago = today - timedelta(days=7)
+    
+    daily_trades = [t for t in closed_trades if datetime.fromisoformat(t.get('close_time', '2000-01-01')).date() == today]
+    weekly_trades = [t for t in closed_trades if datetime.fromisoformat(t.get('close_time', '2000-01-01')).date() >= week_ago]
+    
+    daily_pnl = sum(t.get('pnl', 0) for t in daily_trades)
+    weekly_pnl = sum(t.get('pnl', 0) for t in weekly_trades)
+    
     return {
-        'daily_pnl': 2453.21,
-        'weekly_pnl': 8127.45,
-        'total_pnl': -1234.56,
-        'win_rate': 67.3,
-        'sharpe_ratio': 1.85
+        'total_pnl': total_pnl,
+        'win_rate': win_rate,
+        'max_drawdown': max_dd,
+        'active_positions': active_positions,
+        'daily_pnl': daily_pnl,
+        'weekly_pnl': weekly_pnl
     }
 
 
@@ -253,13 +340,27 @@ def render_agent_status(status: str, agent_name: str) -> str:
     """Randează status agent cu HTML."""
     status_lower = status.lower()
     if status_lower == 'active':
-        return f'<div class="status-active">{agent_name}<br>{status}</div>'
+        return f'<div class="status-active">{agent_name}<br><strong>{status}</strong></div>'
     elif status_lower == 'idle':
-        return f'<div class="status-idle">{agent_name}<br>{status}</div>'
+        return f'<div class="status-idle">{agent_name}<br><strong>{status}</strong></div>'
     elif status_lower == 'monitoring':
-        return f'<div class="status-monitoring">{agent_name}<br>{status}</div>'
+        return f'<div class="status-monitoring">{agent_name}<br><strong>{status}</strong></div>'
     else:
-        return f'<div class="status-error">{agent_name}<br>{status}</div>'
+        return f'<div class="status-error">{agent_name}<br><strong>{status}</strong></div>'
+
+
+async def run_data_collection_agent():
+    """Rulează Data Collection Agent în background."""
+    try:
+        agent = DataCollectionAgent()
+        if await agent.initialize():
+            await agent.collect_all()
+            await agent.shutdown()
+            st.session_state.agent_status['agent1'] = 'IDLE'
+            st.session_state.last_update = datetime.now()
+    except Exception as e:
+        st.error(f"Eroare la rulare Agent 1: {e}")
+        st.session_state.agent_status['agent1'] = 'ERROR'
 
 
 def main():
@@ -267,8 +368,13 @@ def main():
     state = DashboardState()
     config = load_config()
     
-    # Header
-    st.title("📈 Trading Bot v6.2 Dashboard")
+    # Header cu gradient
+    st.markdown("""
+    <div style="text-align: center; padding: 2rem 0;">
+        <h1 style="color: #ffffff; font-size: 3rem; margin-bottom: 0.5rem;">📈 Trading Bot v6.2</h1>
+        <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">Dashboard de Monitorizare</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Agent Status Row
     col1, col2, col3 = st.columns(3)
@@ -288,56 +394,93 @@ def main():
         st.markdown(render_agent_status(agent3_status, "Agent 3"), unsafe_allow_html=True)
         st.caption("Execution")
     
+    # Last update
+    last_update_str = st.session_state.last_update.strftime("%Y-%m-%d %H:%M:%S")
+    st.caption(f"🕐 Ultima actualizare: {last_update_str} | Mode: {config.get('app', {}).get('mode', 'paper').upper()}")
+    
     st.divider()
     
-    # Main Content - 2x2 Grid
-    col1, col2 = st.columns(2)
+    # Main Content - Metrici Esențiale
+    st.subheader("💰 Metrici Esențiale")
     
-    # Top Left: Live Market Data
-    with col1:
-        st.subheader("📊 Live Market Data")
-        symbols = config.get('symbols', ['AAPL', 'MSFT'])
+    trades = get_recent_trades()
+    metrics = calculate_metrics(trades)
+    
+    # Metrici principale în 2 coloane
+    col_metric1, col_metric2, col_metric3, col_metric4 = st.columns(4)
+    
+    with col_metric1:
+        pnl_color = "normal" if metrics['total_pnl'] >= 0 else "inverse"
+        st.metric(
+            "💵 Total P&L",
+            f"${metrics['total_pnl']:,.2f}",
+            delta=f"{metrics['total_pnl']:+,.2f}" if metrics['total_pnl'] != 0 else None,
+            delta_color=pnl_color
+        )
+    
+    with col_metric2:
+        st.metric(
+            "🎯 Win Rate",
+            f"{metrics['win_rate']:.1f}%",
+            delta=f"{metrics['win_rate']:.1f}%" if metrics['win_rate'] > 0 else None
+        )
+    
+    with col_metric3:
+        dd_color = "inverse" if metrics['max_drawdown'] > 5 else "normal"
+        st.metric(
+            "📉 Max Drawdown",
+            f"{metrics['max_drawdown']:.2f}%",
+            delta=f"-{metrics['max_drawdown']:.2f}%" if metrics['max_drawdown'] > 0 else None,
+            delta_color=dd_color
+        )
+    
+    with col_metric4:
+        st.metric(
+            "📊 Poziții Active",
+            f"{metrics['active_positions']}",
+            delta=f"{metrics['active_positions']}" if metrics['active_positions'] > 0 else None
+        )
+    
+    st.divider()
+    
+    # Secțiunea principală - 2 coloane
+    col_left, col_right = st.columns(2)
+    
+    # Left: Watchlist + Market Data
+    with col_left:
+        st.subheader("📊 Watchlist")
+        symbols = config.get('data_collector', {}).get('symbols', config.get('symbols', ['AAPL', 'MSFT']))
         market_data = get_latest_market_data(symbols)
         
         if not market_data.empty:
             for _, row in market_data.iterrows():
-                with st.container():
-                    col_price, col_change = st.columns([2, 1])
-                    with col_price:
-                        st.metric(
-                            label=row['symbol'],
-                            value=f"${row['price']:.2f}",
-                            delta=f"{row['change_pct']:.1f}%"
-                        )
-                    with col_change:
-                        # Mini chart placeholder
-                        st.line_chart([row['price']] * 10, height=50)
+                change_color = "normal" if row['change_pct'] >= 0 else "inverse"
+                st.metric(
+                    label=row['symbol'],
+                    value=f"${row['price']:.2f}",
+                    delta=f"{row['change_pct']:+.2f}%",
+                    delta_color=change_color
+                )
         else:
-            st.info("Nu sunt date disponibile. Rulează Agent 1 pentru a colecta date.")
+            st.info("ℹ️ Nu sunt date disponibile. Rulează Agent 1 pentru a colecta date.")
     
-    # Top Right: Performance Metrics
-    with col2:
-        st.subheader("💰 Performance Metrics")
-        trades = get_recent_trades()
-        metrics = calculate_metrics(trades)
-        
-        col_metric1, col_metric2 = st.columns(2)
-        with col_metric1:
-            st.metric("Daily PnL", f"${metrics['daily_pnl']:,.2f}")
-            st.metric("Weekly PnL", f"${metrics['weekly_pnl']:,.2f}")
-        with col_metric2:
-            st.metric("Total PnL", f"${metrics['total_pnl']:,.2f}")
-            st.metric("Win Rate", f"{metrics['win_rate']:.1f}%")
-        
-        st.metric("Sharpe Ratio", f"{metrics['sharpe_ratio']:.2f}")
+    # Right: Poziții Active (când Agent 3 e implementat)
+    with col_right:
+        st.subheader("💼 Poziții Active")
+        if metrics['active_positions'] > 0:
+            # TODO: Citește poziții reale din data/trades când Agent 3 e implementat
+            st.info(f"📌 {metrics['active_positions']} poziții active")
+            st.caption("Detalii poziții vor fi afișate când Agent 3 este implementat")
+        else:
+            st.info("ℹ️ Nu există poziții active")
     
     st.divider()
     
-    # Bottom Row
-    col3, col4 = st.columns(2)
+    # Bottom: Controls + Activity Log
+    col_controls, col_logs = st.columns(2)
     
-    # Bottom Left: Controls
-    with col3:
+    # Controls (secundar - focus pe monitorizare)
+    with col_controls:
         st.subheader("🎮 Controls")
         
         col_start, col_stop = st.columns(2)
@@ -346,6 +489,9 @@ def main():
                 st.session_state.bot_running = True
                 st.session_state.agent_status['agent1'] = 'ACTIVE'
                 st.success("Bot started!")
+                
+                # Rulează Agent 1 în background
+                asyncio.create_task(run_data_collection_agent())
                 st.rerun()
         
         with col_stop:
@@ -359,59 +505,61 @@ def main():
                 st.warning("Bot stopped!")
                 st.rerun()
         
-        col_pause, col_reset = st.columns(2)
-        with col_pause:
-            st.button("⏸️ PAUSE", use_container_width=True)
-        with col_reset:
-            st.button("🔄 RESET", use_container_width=True)
-        
         st.divider()
         
         # Configuration Display
-        st.caption("**Configuration**")
+        st.caption("**⚙️ Configuration**")
         app_config = config.get('app', {})
         st.text(f"Mode: {app_config.get('mode', 'paper').upper()}")
         st.text(f"Risk Level: Medium")
         st.text(f"Max Position: $50k")
         st.text(f"Stop Loss: 2%")
     
-    # Bottom Right: Recent Activity Logs
-    with col4:
-        st.subheader("📋 Recent Activity Logs")
+    # Activity Log
+    with col_logs:
+        st.subheader("📋 Recent Activity")
         
         # Simulare logs (în producție, citește din fișiere)
         logs = [
-            {"time": "14:32:15", "agent": "Agent 1", "message": "BUY AAPL x100 @ $175.32"},
+            {"time": "14:32:15", "agent": "Agent 1", "message": "Data collection completed"},
             {"time": "14:30:42", "agent": "Agent 3", "message": "Market scan completed"},
-            {"time": "14:28:09", "agent": "Agent 2", "message": "Position closed +$234"},
-            {"time": "14:25:33", "agent": "Agent 1", "message": "SELL MSFT x50 @ $412.85"},
+            {"time": "14:28:09", "agent": "Agent 2", "message": "Signal generated"},
+            {"time": "14:25:33", "agent": "Agent 1", "message": "Data collection started"},
             {"time": "14:22:18", "agent": "System", "message": "All agents initialized"},
         ]
         
         # Adaugă logs reale dacă există
-        signals = get_recent_signals()
-        for signal in signals[:5]:
-            timestamp = signal.get('timestamp', datetime.now().strftime('%H:%M:%S'))
-            logs.append({
-                "time": timestamp[-8:-3] if len(timestamp) > 8 else timestamp,
-                "agent": "Agent 2",
-                "message": f"Signal: {signal.get('action', 'N/A')} {signal.get('symbol', '')}"
-            })
+        signals_path = Path("data/signals")
+        if signals_path.exists():
+            json_files = sorted(signals_path.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+            for json_file in json_files[:5]:
+                try:
+                    with open(json_file, 'r') as f:
+                        signal = json.load(f)
+                        timestamp = signal.get('timestamp', datetime.now().isoformat())
+                        time_str = timestamp[-8:-3] if len(timestamp) > 8 else datetime.now().strftime('%H:%M:%S')
+                        logs.append({
+                            "time": time_str,
+                            "agent": "Agent 2",
+                            "message": f"Signal: {signal.get('action', 'N/A')} {signal.get('symbol', '')}"
+                        })
+                except Exception:
+                    pass
         
         # Display logs
         for log in logs[:10]:
             st.text(f"**{log['time']}**: {log['agent']}: {log['message']}")
     
-    # Auto-refresh când bot-ul rulează
-    if st.session_state.bot_running:
-        # Refresh la fiecare 10 secunde când rulează
-        time.sleep(10)
-        st.rerun()
-    else:
-        # Refresh manual sau la fiecare 30 secunde când e idle
-        auto_refresh = st.checkbox("🔄 Auto-refresh (30s)", value=False)
+    # Refresh opțional
+    st.divider()
+    col_refresh, _ = st.columns([1, 3])
+    with col_refresh:
+        if st.button("🔄 Refresh Data", use_container_width=True):
+            st.rerun()
+        
+        auto_refresh = st.checkbox("🔄 Auto-refresh (60s)", value=False)
         if auto_refresh:
-            time.sleep(30)
+            time.sleep(60)
             st.rerun()
 
 
