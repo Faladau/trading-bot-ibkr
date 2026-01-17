@@ -124,9 +124,10 @@ def main():
     state = DashboardState()
     config = load_config()
     
-    # Overlay gradient peste background
+    # Background image cu overlay gradient
     st.markdown("""
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 12, 41, 0.9) 0%, rgba(48, 43, 99, 0.9) 50%, rgba(36, 36, 62, 0.9) 100%); z-index: 0; pointer-events: none;"></div>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80'); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 0; pointer-events: none;"></div>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 12, 41, 0.85) 0%, rgba(48, 43, 99, 0.85) 50%, rgba(36, 36, 62, 0.85) 100%); z-index: 1; pointer-events: none;"></div>
     """, unsafe_allow_html=True)
     
     # Header
