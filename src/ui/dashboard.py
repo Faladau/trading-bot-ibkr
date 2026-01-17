@@ -96,11 +96,54 @@ class DashboardState:
 def load_config() -> dict:
     """Încarcă configurația."""
     try:
+        # Încearcă mai multe path-uri pentru compatibilitate Streamlit Cloud
+        from pathlib import Path
+        
+        # Path-uri posibile
+        possible_paths = [
+            "config/config.yaml",  # Local development
+            "config.yaml",  # Root
+            Path(__file__).parent.parent.parent / "config" / "config.yaml",  # Absolute
+        ]
+        
         config_loader = ConfigLoader()
-        return config_loader.load_config("config.yaml")
+        
+        # Încearcă fiecare path
+        for config_path in possible_paths:
+            try:
+                if isinstance(config_path, Path):
+                    if config_path.exists():
+                        return config_loader.load_config(str(config_path.relative_to(Path.cwd())))
+                else:
+                    config_file = Path(config_path)
+                    if config_file.exists():
+                        return config_loader.load_config(config_path)
+            except Exception:
+                continue
+        
+        # Dacă nu găsește, returnează config default
+        st.warning("Config file not found, using default settings")
+        return {
+            'symbols': ['AAPL', 'MSFT'],
+            'app': {'mode': 'paper'},
+            'data_collector': {
+                'symbols': ['AAPL', 'MSFT'],
+                'timeframe': '1D',
+                'data_dir': 'data/processed'
+            }
+        }
     except Exception as e:
         st.error(f"Eroare la încărcare config: {e}")
-        return {}
+        # Returnează config default în caz de eroare
+        return {
+            'symbols': ['AAPL', 'MSFT'],
+            'app': {'mode': 'paper'},
+            'data_collector': {
+                'symbols': ['AAPL', 'MSFT'],
+                'timeframe': '1D',
+                'data_dir': 'data/processed'
+            }
+        }
 
 
 def get_latest_market_data(symbols: List[str], data_dir: str = "data/processed") -> pd.DataFrame:
