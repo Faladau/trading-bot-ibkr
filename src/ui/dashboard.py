@@ -124,19 +124,29 @@ def main():
     state = DashboardState()
     config = load_config()
     
-    # Background image cu overlay gradient mai transparent
+    # Background simplu dark, fără mov
     st.markdown("""
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80'); background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.3; z-index: 0; pointer-events: none;"></div>
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 12, 41, 0.92) 0%, rgba(48, 43, 99, 0.92) 50%, rgba(36, 36, 62, 0.92) 100%); z-index: 1; pointer-events: none;"></div>
+    <style>
+    .stApp {
+        background: #1a1a2e !important;
+    }
+    .main-content {
+        max-width: 80%;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    </style>
     """, unsafe_allow_html=True)
     
-    # Header
-    st.markdown("""
-    <div style="text-align: center; padding: 2rem 0; position: relative; z-index: 10;">
-        <h1 style="color: #ffffff; font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);">📈 Trading Bot v6.2</h1>
-        <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">Dashboard de Monitorizare</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Container principal pe 80% din pagină
+    with st.container():
+        # Header
+        st.markdown("""
+        <div style="text-align: center; padding: 2rem 0;">
+            <h1 style="color: #ffffff; font-size: 3rem; margin-bottom: 0.5rem;">📈 Trading Bot v6.2</h1>
+            <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">Dashboard de Monitorizare</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     # Agent Status Row (folosind componentă)
     render_agent_status_row(st.session_state.agent_status)
