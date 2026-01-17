@@ -1286,14 +1286,239 @@ cat ../strategy_engine/output/AAPL_signals.json
 
 ---
 
+## 11. UI DASHBOARD — STREAMLIT
+
 ### 11.1 Scop Dashboard
-- Status agenți live (Agent 1,2,3)
-- Live data (din Agent 1 CSV)
-- Poziții active + PnL
-- Metrics 24h (winrate, drawdown)
-- Controls (start/stop, config)
-- Logs realtime
-- Deploy GRATUIT Streamlit Cloud
+Dashboard responsive (mobile + desktop) pentru monitorizare și control trading bot în timp real.
+
+**Funcționalități principale:**
+- ✅ Status agenți live (Agent 1, 2, 3) — ACTIVE/IDLE/MONITORING/ERROR
+- ✅ Live market data (citește din CSV-uri generate de Agent 1)
+- ✅ Performance metrics (PnL daily/weekly/total, Win Rate, Sharpe Ratio)
+- ✅ Controls (START/STOP/PAUSE/RESET) — pornește efectiv Agent 1
+- ✅ Activity logs realtime
+- ✅ Configuration display
+- ✅ Responsive design (funcționează pe telefon)
+- ✅ Deploy GRATUIT pe Streamlit Cloud
+
+### 11.2 Structură Dashboard
+
+**Entry Point**: `streamlit_app.py` (root)
+**Main Module**: `src/ui/dashboard.py`
+
+**Layout (2x2 Grid):**
+```
+┌─────────────────────────────────────────┐
+│  Trading Bot v6.2 Dashboard            │
+│  [Agent 1] [Agent 2] [Agent 3]        │
+├──────────────────┬──────────────────────┤
+│ Live Market Data │ Performance Metrics  │
+│ (Top Left)       │ (Top Right)          │
+├──────────────────┼──────────────────────┤
+│ Controls         │ Activity Logs        │
+│ (Bottom Left)    │ (Bottom Right)       │
+└──────────────────┴──────────────────────┘
+```
+
+### 11.3 Componente Dashboard
+
+#### 11.3.1 Status Agenți
+**Locație**: Top row (3 coloane)
+
+**Status-uri posibile:**
+- 🟢 **ACTIVE** — Agent rulează (verde)
+- 🟡 **IDLE** — Agent inactiv (galben)
+- 🔵 **MONITORING** — Agent monitorizează (albastru)
+- 🔴 **ERROR** — Eroare (roșu)
+
+**Agenți:**
+- **Agent 1**: Data Collection
+- **Agent 2**: Decision
+- **Agent 3**: Execution
+
+#### 11.3.2 Live Market Data
+**Locație**: Top Left
+
+**Funcționalitate:**
+- Citește ultimele date din `data/processed/*.csv`
+- Afișează pentru fiecare simbol:
+  - Preț curent (close)
+  - Change % (delta)
+  - Mini chart placeholder
+- Dacă nu sunt date: mesaj "Nu sunt date disponibile. Rulează Agent 1 pentru a colecta date."
+
+**Sursă date**: CSV-uri generate de Agent 1
+
+#### 11.3.3 Performance Metrics
+**Locație**: Top Right
+
+**Metrici afișate:**
+- **Daily PnL** — Profit/Pierdere zilnică
+- **Weekly PnL** — Profit/Pierdere săptămânală
+- **Total PnL** — Profit/Pierdere totală
+- **Win Rate** — Procent trade-uri profitabile
+- **Sharpe Ratio** — Măsură risk-adjusted return
+
+**Sursă date**: `data/trades/*.json` (trade-uri completate)
+
+#### 11.3.4 Controls
+**Locație**: Bottom Left
+
+**Butoane:**
+- **▶️ START** (Primary) — Pornește Agent 1 în background
+  - Creează thread separat
+  - Rulează `DataCollectionAgent.collect_all()`
+  - Colectează date de la Yahoo Finance (sau IBKR dacă e configurat)
+  - Salvează CSV-uri în `data/processed/`
+  - Actualizează status la ACTIVE → IDLE
+  
+- **⏹️ STOP** (Secondary) — Oprește bot-ul
+  - Setează toți agenții la IDLE
+  - Oprește execuția
+  
+- **⏸️ PAUSE** — Pause (coming soon)
+- **🔄 RESET** — Resetează dashboard state
+
+**Configuration Display:**
+- Mode: PAPER/LIVE
+- Risk Level: Medium
+- Max Position: $50k
+- Stop Loss: 2%
+
+#### 11.3.5 Activity Logs
+**Locație**: Bottom Right
+
+**Funcționalitate:**
+- Afișează ultimele 10 activități
+- Format: `**HH:MM:SS**: Agent X: Message`
+- Sursă: `data/signals/*.json` + logs simulate
+- Auto-update când bot-ul rulează
+
+**Exemplu logs:**
+```
+14:32:15: Agent 1: BUY AAPL x100 @ $175.32
+14:30:42: Agent 3: Market scan completed
+14:28:09: Agent 2: Position closed +$234
+14:25:33: Agent 1: SELL MSFT x50 @ $412.85
+14:22:18: System: All agents initialized
+```
+
+### 11.4 Funcționalități Tehnice
+
+#### 11.4.1 Execuție Agent 1
+Când se apasă START:
+```python
+# Creează thread separat
+thread = threading.Thread(target=run_agent1, daemon=True)
+thread.start()
+
+# Rulează Agent 1
+agent = DataCollectionAgent()
+await agent.initialize()
+await agent.collect_all()  # Colectează date Yahoo Finance
+await agent.shutdown()
+```
+
+#### 11.4.2 Auto-Refresh
+- **Când bot rulează**: Refresh la fiecare 10 secunde
+- **Când bot e idle**: Checkbox "Auto-refresh (30s)" opțional
+
+#### 11.4.3 Path Handling
+Dashboard-ul încearcă mai multe path-uri pentru compatibilitate:
+- `config/config.yaml` (local development)
+- `config.yaml` (root)
+- Absolute path (Streamlit Cloud)
+
+**Dacă nu găsește config**: Folosește config default (AAPL, MSFT, mode: paper)
+
+#### 11.4.4 Responsive Design
+**CSS Custom:**
+- Mobile: Butoane full-width, layout stacked
+- Tablet: Layout adaptiv
+- Desktop: 2x2 grid
+
+**Breakpoints:**
+- `@media (max-width: 768px)` — Mobile optimizat
+
+### 11.5 Deploy Streamlit Cloud
+
+#### 11.5.1 Setup
+1. **Repository**: `Faladau/trading-bot-ibkr`
+2. **Branch**: `master`
+3. **Main file**: `streamlit_app.py`
+4. **URL**: `trading-bot-ibkr-*.streamlit.app`
+
+#### 11.5.2 Fișiere Necesare
+- ✅ `streamlit_app.py` — Entry point
+- ✅ `requirements.txt` — Dependențe (streamlit>=1.28.1)
+- ✅ `.streamlit/config.toml` — Configurație tema
+- ✅ `packages.txt` — Gol (sau pachete system)
+- ✅ `src/ui/dashboard.py` — Dashboard principal
+
+#### 11.5.3 Limitări Streamlit Cloud
+⚠️ **Important:**
+- **Fișierele nu persistă** — CSV-urile se șterg la restart
+- **Soluții:**
+  1. Folosește Streamlit Secrets pentru path-uri cloud (S3, Google Drive)
+  2. Sau rulează Agent 1 local și upload CSV-uri manual
+  3. Sau folosește database cloud (PostgreSQL, MongoDB)
+
+#### 11.5.4 Config în Streamlit Cloud
+**Opțional — Streamlit Secrets:**
+```toml
+# .streamlit/secrets.toml (în Streamlit Cloud Settings)
+[paths]
+config_file = "config/config.yaml"
+data_dir = "data/processed"
+
+[ibkr]
+host = "127.0.0.1"
+port = 7497
+```
+
+### 11.6 Testare Dashboard
+
+#### 11.6.1 Local
+```bash
+streamlit run streamlit_app.py
+```
+Dashboard se deschide: `http://localhost:8501`
+
+#### 11.6.2 Streamlit Cloud
+1. Push pe GitHub
+2. Streamlit Cloud detectează automat
+3. Accesează URL generat
+4. Testează butonul START
+
+### 11.7 Status Implementare
+
+✅ **Implementat:**
+- Dashboard UI complet
+- Status agenți
+- Live market data (citire CSV)
+- Performance metrics
+- Controls (START/STOP funcțional)
+- Activity logs
+- Responsive design
+- Auto-refresh
+- Path handling robust
+
+⚠️ **Limitări:**
+- CSV-urile nu persistă în Streamlit Cloud (se șterg)
+- Agent 1 rulează în thread (nu persistă după refresh)
+- Metrics sunt simulate (necesită trade-uri reale)
+
+### 11.8 Următorii Pași
+
+1. **Persistență date**: Integrare cu cloud storage (S3, Google Drive)
+2. **Real-time updates**: WebSocket pentru updates live
+3. **Charts**: Grafice interactive pentru prețuri
+4. **Alerts**: Notificări push (Telegram, email)
+5. **Backtesting UI**: Interfață pentru backtesting
+
+---
+
+## CONCLUZIE
 
 ## CONCLUZIE
 
