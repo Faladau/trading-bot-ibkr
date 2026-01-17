@@ -5,83 +5,25 @@
    ============================================ */
 
 .stApp {
-    background: 
-        /* Overlay gradient mai opac pentru lizibilitate */
-        linear-gradient(135deg, rgba(15, 12, 41, 0.92) 0%, rgba(48, 43, 99, 0.92) 50%, rgba(36, 36, 62, 0.92) 100%),
-        /* Imagine de background cu grafice financiare - mai transparentă */
-        url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80') center center / cover no-repeat,
-        /* Fallback gradient */
-        linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-    background-blend-mode: overlay;
+    background: #1a1a2e !important;
     color: #ffffff;
     position: relative;
     overflow: hidden;
     min-height: 100vh;
 }
 
-/* Pattern-uri decorative de trading în background */
-.stApp::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.1;
-    background-image: 
-        /* Grid pattern */
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 60px,
-            rgba(102, 126, 234, 0.2) 60px,
-            rgba(102, 126, 234, 0.2) 61px
-        ),
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 60px,
-            rgba(102, 126, 234, 0.2) 60px,
-            rgba(102, 126, 234, 0.2) 61px
-        ),
-        /* Linii diagonale de trend */
-        repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 200px,
-            rgba(118, 75, 162, 0.15) 200px,
-            rgba(118, 75, 162, 0.15) 201px
-        ),
-        repeating-linear-gradient(
-            -45deg,
-            transparent,
-            transparent 250px,
-            rgba(76, 175, 80, 0.15) 250px,
-            rgba(76, 175, 80, 0.15) 251px
-        );
+/* Container principal pe 80% din pagină */
+.main-container {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
-/* Pattern-uri CSS suplimentare peste imagine (foarte subtile) */
-.stApp::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        repeating-linear-gradient(
-            45deg,
-            transparent,
-            transparent 300px,
-            rgba(118, 75, 162, 0.05) 300px,
-            rgba(118, 75, 162, 0.05) 301px
-        );
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.1;
+/* Override pentru Streamlit blocks */
+[data-testid="stAppViewContainer"] {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
 /* ============================================

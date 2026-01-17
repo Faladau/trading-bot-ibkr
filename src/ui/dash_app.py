@@ -99,7 +99,7 @@ app.layout = html.Div([
                     'text-align': 'center'
                 }
             ),
-        ], style={'padding': '2rem 0', 'position': 'relative', 'z-index': 10, 'background': 'rgba(0, 0, 0, 0.3)', 'backdrop-filter': 'blur(5px)', 'border-radius': '10px', 'margin-bottom': '2rem'}),
+        ], style={'padding': '2rem 0', 'position': 'relative', 'z-index': 10, 'margin-bottom': '2rem'}),
         
         # Agent Status Row
         html.Div(id='agent-status-row', style={'position': 'relative', 'z-index': 10}),
@@ -157,7 +157,7 @@ app.layout = html.Div([
             ),
         ], style={'margin-top': '2rem', 'position': 'relative', 'z-index': 10}),
         
-    ], style={'position': 'relative', 'z-index': 10, 'padding': '0 2rem'}),
+    ], style={'position': 'relative', 'z-index': 10, 'max-width': '80%', 'margin': '0 auto', 'padding': '2rem'}),
     
     # Interval pentru auto-refresh
     dcc.Interval(
