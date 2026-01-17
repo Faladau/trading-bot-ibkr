@@ -10,83 +10,89 @@
 
 ---
 
-## 📐 Structură Proiect (Îmbunătățită)
+## 📐 Structură Proiect (v6.0 - Multi-Agent)
 
 ```
 trading_bot/
 │
-├── config/                          # Configurație (YAML, env)
-│   ├── config.yaml
-│   ├── strategy_params.yaml
-│   └── risk_params.yaml
+├── config/
+│   ├── config.yaml              # Configurație generală
+│   ├── strategy_params.yaml      # Parametri strategie
+│   └── risk_params.yaml          # Parametri risc
 │
 ├── src/
 │   ├── __init__.py
-│   ├── main.py                      # Entry point - orchestrator
+│   ├── main.py                  # Entry point - orchestrator
 │   │
-│   ├── models/                      # 🆕 Entități de date (DTOs)
+│   ├── agents/                  # 🆕 Agenții principali (v6.0)
 │   │   ├── __init__.py
-│   │   ├── trade.py                 # Trade, Position, Order
-│   │   ├── signal.py                # Signal, Indicator
-│   │   └── market_data.py           # Bar, Quote, Tick
+│   │   ├── data_collection_agent.py    # Agent 1
+│   │   ├── decision_agent.py           # Agent 2
+│   │   └── execution_agent.py          # Agent 3
 │   │
-│   ├── broker/                      # Strat: Infrastructură (I/O)
+│   ├── broker/                   # Folosit de Agent 1 și 3
 │   │   ├── __init__.py
-│   │   ├── ibkr_connector.py        # Conexiune IBKR
-│   │   ├── data_provider.py         # Date istorice + live
-│   │   └── execution.py             # Execuție ordine
+│   │   ├── ibkr_connector.py    # Conexiune IBKR
+│   │   ├── data_provider.py     # Colectare date
+│   │   └── execution.py         # Execuție ordine
 │   │
-│   ├── strategy/                    # Strat: Logică Business
+│   ├── strategy/                 # Folosit de Agent 2
 │   │   ├── __init__.py
-│   │   ├── base_strategy.py         # 🆕 Clasă abstractă (evită duplicare)
-│   │   ├── technical_analysis.py   # Calcul indicatori
-│   │   ├── signal_generator.py      # Logică BUY/SELL/HOLD
-│   │   └── filters.py               # Filtre (oră, trend, etc.)
+│   │   ├── technical_analysis.py # Calcul indicatori
+│   │   ├── signal_generator.py  # Logică decizie
+│   │   └── filters.py           # Filtre
 │   │
-│   ├── risk/                        # Strat: Management Risc
+│   ├── risk/                     # Folosit de Agent 3
 │   │   ├── __init__.py
-│   │   ├── position_sizing.py       # Calcul dimensiune poziție
-│   │   ├── risk_manager.py          # 🆕 Manager centralizat
-│   │   ├── risk_checks.py           # Validări (daily loss, etc.)
-│   │   └── limits.py                # Constante și limite
+│   │   ├── risk_manager.py      # Validări risc
+│   │   └── position_sizing.py   # Calcul sizing
 │   │
-│   ├── services/                    # 🆕 Servicii (orchestrare logică)
+│   ├── models/                   # Folosit de toți agenții
 │   │   ├── __init__.py
-│   │   ├── trading_service.py        # Orchestrează: strategy + risk + execution
-│   │   └── portfolio_service.py     # Gestionare portofoliu
+│   │   ├── market_data.py       # Bar, Quote, Tick
+│   │   ├── signal.py            # Signal, Indicator
+│   │   └── trade.py             # Trade, Position, Order
 │   │
-│   ├── backtest/                    # Strat: Testare
+│   ├── services/                 # Orchestrează agenții
 │   │   ├── __init__.py
-│   │   ├── backtester.py            # Motor backtesting
-│   │   ├── metrics.py               # Calcul metrici
-│   │   └── portfolio_sim.py        # Simulator portofoliu
+│   │   └── trading_service.py   # Orchestrator principal
 │   │
-│   ├── storage/                     # 🆕 Persistență (opțional)
+│   ├── backtest/                 # Backtesting
 │   │   ├── __init__.py
-│   │   ├── repository.py           # Pattern Repository (abstracție DB)
-│   │   └── sqlite_store.py         # Implementare SQLite
+│   │   ├── backtester.py
+│   │   └── metrics.py
 │   │
-│   ├── logging_utils/                # Strat: Observabilitate
+│   ├── storage/                  # Persistență (opțional)
 │   │   ├── __init__.py
-│   │   ├── logger.py               # Configurare logging
-│   │   └── formatters.py           # Format log messages
+│   │   └── repository.py
 │   │
-│   └── utils/                       # Strat: Utilitare
+│   ├── logging_utils/            # Logging
+│   │   ├── __init__.py
+│   │   └── logger.py
+│   │
+│   └── utils/                    # Utilitare
 │       ├── __init__.py
-│       ├── helpers.py               # Funcții helper
-│       ├── validators.py            # Validare input
-│       └── config_loader.py        # Citire config
+│       ├── config_loader.py
+│       ├── helpers.py
+│       └── validators.py
 │
 ├── data/
-│   ├── historical/                  # Date istorice (CSV)
-│   ├── backtests/                   # Rezultate backtests
-│   └── logs/                        # Log-uri
+│   ├── historical/              # Date istorice (CSV, JSON)
+│   ├── signals/                 # 🆕 Semnale generate (JSON)
+│   ├── trades/                  # 🆕 Trade-uri completate (JSON)
+│   ├── backtests/               # Rezultate backtests
+│   └── logs/                    # Log-uri
 │
 └── tests/
-    ├── test_strategy.py
-    ├── test_risk.py
-    ├── test_execution.py
-    └── test_backtest.py
+    ├── test_agent1.py           # 🆕 Teste Agent 1
+    ├── test_agent2.py           # 🆕 Teste Agent 2
+    ├── test_agent3.py           # 🆕 Teste Agent 3
+    ├── test_integration.py      # 🆕 Teste integrare
+    ├── test_models.py
+    ├── test_config_loader.py
+    ├── test_helpers.py
+    ├── test_validators.py
+    └── test_logger.py
 ```
 
 ---

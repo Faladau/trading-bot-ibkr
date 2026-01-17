@@ -1,0 +1,107 @@
+# Structură Proiect - Trading Bot v6.0
+
+## 📐 Organizare pe Agenți
+
+Fiecare agent are propriul folder cu tot ce ține de el, inclusiv testele. Modulele comune rămân în `src/common/`.
+
+---
+
+## 📁 Structură Completă
+
+```
+trading_bot/
+│
+├── config/                       # Configurații YAML
+│   ├── config.yaml
+│   ├── strategy_params.yaml
+│   └── risk_params.yaml
+│
+├── src/
+│   ├── main.py                  # Entry point
+│   │
+│   ├── agents/                  # 🎯 AGENȚI (fiecare în folder separat)
+│   │   ├── agent1/              # Data Collection
+│   │   │   ├── __init__.py
+│   │   │   └── agent.py
+│   │   │
+│   │   ├── agent2/              # Decision
+│   │   │   ├── __init__.py
+│   │   │   └── agent.py
+│   │   │
+│   │   └── agent3/              # Execution
+│   │       ├── __init__.py
+│   │       └── agent.py
+│   │
+│   ├── common/                  # 🔧 MODULE COMUNE
+│   │   ├── broker/              # IBKR connection & data
+│   │   ├── strategy/            # Technical analysis
+│   │   ├── risk/                # Risk management
+│   │   ├── models/              # Data models (Bar, Signal, Trade)
+│   │   ├── logging_utils/       # Logging
+│   │   └── utils/               # Helpers, validators, config
+│   │
+│   ├── services/                # Orchestration
+│   ├── backtest/                # Backtesting
+│   └── storage/                 # Persistence
+│
+├── tests/
+│   ├── agent1/                  # 🧪 Teste Agent 1
+│   ├── agent2/                  # 🧪 Teste Agent 2
+│   ├── agent3/                  # 🧪 Teste Agent 3
+│   ├── common/                  # 🧪 Teste module comune
+│   └── integration/             # 🧪 Teste integrare
+│
+└── data/                        # Date persistate
+    ├── historical/
+    ├── signals/
+    ├── trades/
+    └── logs/
+```
+
+---
+
+## 🎯 Import-uri
+
+### În agenți:
+```python
+# Agent 1
+from src.common.models.market_data import Bar
+from src.common.broker.data_provider import DataProvider
+
+# Agent 2
+from src.common.models.signal import Signal
+from src.common.strategy.technical_analysis import calculate_ema
+
+# Agent 3
+from src.common.models.trade import Order
+from src.common.risk.risk_manager import RiskManager
+```
+
+### În teste:
+```python
+# Teste Agent 1
+from src.agents.agent1.agent import DataCollectionAgent
+from src.common.models.market_data import Bar
+
+# Teste comune
+from src.common.models import Bar, Signal, Trade
+from src.common.utils.config_loader import load_config
+```
+
+---
+
+## ✅ Avantaje
+
+1. **Izolare completă** - Fiecare agent e în propriul folder
+2. **Teste organizate** - Testele sunt lângă agentul lor
+3. **Claritate** - Știi exact unde să cauți ceva
+4. **Scalabilitate** - Adaugi agenți noi fără să afectezi alții
+5. **Module comune** - Evită duplicarea codului
+
+---
+
+## 📝 Note
+
+- **Agent 1** folosește: `common/broker`, `common/models`, `common/utils`, `common/logging_utils`
+- **Agent 2** folosește: `common/strategy`, `common/models`, `common/utils`, `common/logging_utils`
+- **Agent 3** folosește: `common/broker`, `common/risk`, `common/models`, `common/utils`, `common/logging_utils`

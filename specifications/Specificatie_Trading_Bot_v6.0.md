@@ -292,48 +292,69 @@ trading_bot/
 │   ├── __init__.py
 │   ├── main.py                  # Entry point - orchestrator
 │   │
-│   ├── agents/                  # 🆕 Agenții principali
+│   ├── agents/                  # 🆕 Agenții principali (fiecare în folder separat)
 │   │   ├── __init__.py
-│   │   ├── data_collection_agent.py    # Agent 1
-│   │   ├── decision_agent.py           # Agent 2
-│   │   └── execution_agent.py          # Agent 3
+│   │   │
+│   │   ├── agent1/              # Agent 1 - Data Collection
+│   │   │   ├── __init__.py
+│   │   │   └── agent.py
+│   │   │
+│   │   ├── agent2/              # Agent 2 - Decision
+│   │   │   ├── __init__.py
+│   │   │   └── agent.py
+│   │   │
+│   │   └── agent3/              # Agent 3 - Execution
+│   │       ├── __init__.py
+│   │       └── agent.py
 │   │
-│   ├── broker/                   # Folosit de Agent 1 și 3
+│   ├── common/                  # 🆕 Module comune (folosite de mai mulți agenți)
 │   │   ├── __init__.py
-│   │   ├── ibkr_connector.py    # Conexiune IBKR
-│   │   ├── data_provider.py     # Colectare date
-│   │   └── execution.py         # Execuție ordine
-│   │
-│   ├── strategy/                 # Folosit de Agent 2
-│   │   ├── __init__.py
-│   │   ├── technical_analysis.py # Calcul indicatori
-│   │   ├── signal_generator.py  # Logică decizie
-│   │   └── filters.py           # Filtre
-│   │
-│   ├── risk/                     # Folosit de Agent 3
-│   │   ├── __init__.py
-│   │   ├── risk_manager.py      # Validări risc
-│   │   └── position_sizing.py   # Calcul sizing
-│   │
-│   ├── models/                   # Folosit de toți agenții
-│   │   ├── __init__.py
-│   │   ├── market_data.py       # Bar, Quote, Tick
-│   │   ├── signal.py            # Signal, Indicator
-│   │   └── trade.py             # Trade, Position, Order
+│   │   │
+│   │   ├── broker/              # Folosit de Agent 1 și 3
+│   │   │   ├── __init__.py
+│   │   │   ├── ibkr_connector.py
+│   │   │   ├── data_provider.py
+│   │   │   └── execution.py
+│   │   │
+│   │   ├── strategy/            # Folosit de Agent 2
+│   │   │   ├── __init__.py
+│   │   │   ├── technical_analysis.py
+│   │   │   ├── signal_generator.py
+│   │   │   └── filters.py
+│   │   │
+│   │   ├── risk/                # Folosit de Agent 3
+│   │   │   ├── __init__.py
+│   │   │   ├── risk_manager.py
+│   │   │   └── position_sizing.py
+│   │   │
+│   │   ├── models/              # Folosit de TOȚI agenții
+│   │   │   ├── __init__.py
+│   │   │   ├── market_data.py
+│   │   │   ├── signal.py
+│   │   │   └── trade.py
+│   │   │
+│   │   ├── logging_utils/       # Folosit de TOȚI
+│   │   │   ├── __init__.py
+│   │   │   └── logger.py
+│   │   │
+│   │   └── utils/               # Folosit de TOȚI
+│   │       ├── __init__.py
+│   │       ├── config_loader.py
+│   │       ├── helpers.py
+│   │       └── validators.py
 │   │
 │   ├── services/                 # Orchestrează agenții
 │   │   ├── __init__.py
-│   │   └── trading_service.py   # Orchestrator principal
+│   │   └── trading_service.py
 │   │
-│   ├── logging_utils/            # Logging
+│   ├── backtest/                 # Backtesting
 │   │   ├── __init__.py
-│   │   └── logger.py
+│   │   ├── backtester.py
+│   │   └── metrics.py
 │   │
-│   └── utils/                    # Utilitare
+│   └── storage/                  # Persistență (opțional)
 │       ├── __init__.py
-│       ├── config_loader.py
-│       ├── helpers.py
-│       └── validators.py
+│       └── repository.py
 │
 ├── data/
 │   ├── historical/              # Date istorice (CSV, JSON)
@@ -342,10 +363,31 @@ trading_bot/
 │   └── logs/                    # Log-uri
 │
 ├── tests/
-│   ├── test_agent1.py
-│   ├── test_agent2.py
-│   ├── test_agent3.py
-│   └── test_integration.py
+│   ├── __init__.py
+│   │
+│   ├── agent1/                  # 🆕 Teste Agent 1
+│   │   ├── __init__.py
+│   │   └── test_data_collection_agent.py
+│   │
+│   ├── agent2/                  # 🆕 Teste Agent 2
+│   │   ├── __init__.py
+│   │   └── test_decision_agent.py
+│   │
+│   ├── agent3/                  # 🆕 Teste Agent 3
+│   │   ├── __init__.py
+│   │   └── test_execution_agent.py
+│   │
+│   ├── common/                  # 🆕 Teste module comune
+│   │   ├── __init__.py
+│   │   ├── test_models.py
+│   │   ├── test_config_loader.py
+│   │   ├── test_helpers.py
+│   │   ├── test_validators.py
+│   │   └── test_logger.py
+│   │
+│   └── integration/             # 🆕 Teste integrare
+│       ├── __init__.py
+│       └── test_agent_communication.py
 │
 ├── requirements.txt
 ├── README.md
