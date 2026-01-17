@@ -31,8 +31,32 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Încarcă CSS-ul din fișier separat
+# Încarcă CSS-ul din fișier separat (trebuie să fie primul)
 load_css()
+
+# CSS suplimentar inline pentru a forța layout-ul după refresh
+st.markdown("""
+<style>
+    /* Force layout 80% - aplicat după load_css pentru a suprascrie */
+    section[data-testid="stAppViewContainer"] {
+        max-width: 80% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 2rem !important;
+    }
+    .main .block-container {
+        max-width: 80% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 2rem !important;
+    }
+    /* Force pentru Streamlit wide layout */
+    .stApp > div:first-child > div:first-child {
+        max-width: 80% !important;
+        margin: 0 auto !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 
 class DashboardState:

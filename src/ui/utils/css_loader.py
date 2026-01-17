@@ -13,14 +13,37 @@ def load_css() -> None:
     if css_path.exists():
         with open(css_path, 'r', encoding='utf-8') as f:
             css_content = f.read()
-        st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
+        # Adaugă CSS inline pentru layout 80% care trebuie să fie aplicat ÎNAINTE de Streamlit
+        layout_css = """
+        section[data-testid="stAppViewContainer"] {
+            max-width: 80% !important;
+            margin: 0 auto !important;
+            padding: 2rem !important;
+        }
+        .main .block-container {
+            max-width: 80% !important;
+            margin: 0 auto !important;
+            padding: 2rem !important;
+        }
+        """
+        st.markdown(f"<style>{layout_css}{css_content}</style>", unsafe_allow_html=True)
     else:
         # Fallback CSS dacă fișierul nu există
         st.markdown("""
         <style>
             .stApp {
-                background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-                color: #ffffff;
+                background: #1a1a2e !important;
+                color: #ffffff !important;
+            }
+            section[data-testid="stAppViewContainer"] {
+                max-width: 80% !important;
+                margin: 0 auto !important;
+                padding: 2rem !important;
+            }
+            .main .block-container {
+                max-width: 80% !important;
+                margin: 0 auto !important;
+                padding: 2rem !important;
             }
         </style>
         """, unsafe_allow_html=True)
