@@ -5,7 +5,7 @@ Botul de trading trebuie să facă lucruri simple și clare. Totul automat. Făr
 ✅ UTILS: config_loader, logger, helpers, validators - implementate și testate
 ✅ MODELS: Bar, Quote, Tick, Signal, Trade, Position, Order - implementate și testate
 ✅ TESTE: 56 teste unitare (33 utils + 23 models), toate trec
-✅ STRUCTURĂ: Agenți în foldere separate (agent1/, agent2/, agent3/) cu teste dedicate
+✅ STRUCTURĂ: Agenți în foldere separate (data_collection/, decision/, execution/) cu teste dedicate
 
 1.Se conectează la broker.
 Se conectează la Interactive Brokers prin API.

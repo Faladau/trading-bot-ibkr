@@ -1,3 +1,3 @@
 """
-Agents - Agenții principali (Agent 1, 2, 3)
+Agents - Agenții principali (Data Collection, Decision, Execution)
 """
