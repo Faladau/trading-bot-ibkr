@@ -48,6 +48,29 @@ if css_path.exists():
             <title>Trading Bot v6.2 Dashboard</title>
             <style>
                 {css_content}
+                /* Dropdown styling */
+                .Select-control {{
+                    background-color: #0f1419 !important;
+                    border: 2px solid rgba(102, 126, 234, 0.7) !important;
+                    border-radius: 8px !important;
+                }}
+                .Select-value {{
+                    color: #ffffff !important;
+                }}
+                .Select-input > input {{
+                    color: #ffffff !important;
+                }}
+                .Select-menu-outer {{
+                    background-color: #0f1419 !important;
+                    border: 2px solid rgba(102, 126, 234, 0.7) !important;
+                }}
+                .Select-option {{
+                    color: #ffffff !important;
+                    background-color: #1a1a2e !important;
+                }}
+                .Select-option:hover {{
+                    background-color: rgba(102, 126, 234, 0.3) !important;
+                }}
                 /* Force white text pentru Dash */
                 body, * {{
                     color: #ffffff !important;
@@ -148,27 +171,27 @@ app.layout = html.Div([
         html.Div([
             html.H3("🔍 Live Logs", style={'color': '#ffffff', 'margin-bottom': '1rem'}),
             html.Div([
-                html.Label("Filter by level:", style={'color': 'rgba(255, 255, 255, 0.7)', 'margin-right': '0.5rem', 'min-width': '100px'}),
-                dcc.Dropdown(
-                    id='logs-level-filter',
-                    options=[
-                        {'label': '📊 All', 'value': None},
-                        {'label': '🔵 INFO', 'value': 'INFO'},
-                        {'label': '⚠️ WARNING', 'value': 'WARNING'},
-                        {'label': '🔴 ERROR', 'value': 'ERROR'},
-                        {'label': '🐛 DEBUG', 'value': 'DEBUG'},
-                    ],
-                    value=None,
-                    style={
-                        'minWidth': '200px',
-                        'color': '#ffffff',
-                        'backgroundColor': '#1a1a2e',
-                        'borderRadius': '5px',
-                        'border': '1px solid rgba(102, 126, 234, 0.5)',
-                        'zIndex': 1000
-                    },
-                    clearable=False
-                )
+                html.Label("Filter by level:", style={'color': 'rgba(255, 255, 255, 0.9)', 'margin-right': '1rem', 'font-weight': 'bold'}),
+                html.Div([
+                    dcc.Dropdown(
+                        id='logs-level-filter',
+                        options=[
+                            {'label': '📊 All', 'value': None},
+                            {'label': '🔵 INFO', 'value': 'INFO'},
+                            {'label': '⚠️ WARNING', 'value': 'WARNING'},
+                            {'label': '🔴 ERROR', 'value': 'ERROR'},
+                            {'label': '🐛 DEBUG', 'value': 'DEBUG'},
+                        ],
+                        value=None,
+                        clearable=False
+                    )
+                ], style={
+                    'width': '220px',
+                    'backgroundColor': '#0f1419',
+                    'border': '2px solid rgba(102, 126, 234, 0.7)',
+                    'borderRadius': '8px',
+                    'padding': '5px',
+                })
             ], style={'display': 'flex', 'gap': '1rem', 'margin-bottom': '1rem', 'align-items': 'center'}),
             html.Div(
                 id='logs-container',
