@@ -139,6 +139,9 @@ app.layout = html.Div([
             html.Div(id='activity-log-container', style={'position': 'relative', 'z-index': 10}),
         ], style={'display': 'grid', 'grid-template-columns': '1fr 1fr', 'gap': '2rem'}),
         
+        # Status message
+        html.Div(id='status-message', style={'position': 'relative', 'z-index': 10, 'margin-top': '1rem'}),
+        
         # Refresh button
         html.Div([
             html.Button(

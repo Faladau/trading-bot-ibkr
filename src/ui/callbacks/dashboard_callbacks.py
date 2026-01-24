@@ -2,10 +2,10 @@
 Dashboard Callbacks - Callbacks pentru interactivitate Dash
 """
 
-from dash import Input, Output, State, html
+from dash import Input, Output, State, html, callback_context
 from datetime import datetime
 import asyncio
-
+import threading
 from src.ui.utils.data_loader import load_config, get_latest_market_data, get_recent_trades, calculate_metrics
 from src.ui.components.dash_components import (
     render_agent_status_row,
@@ -13,6 +13,34 @@ from src.ui.components.dash_components import (
     render_watchlist_dash,
     render_equity_curve_chart
 )
+from src.common.logging_utils.logger import get_logger
+
+logger = get_logger(__name__)
+
+
+def run_agent_in_thread():
+    """Rulează agentul în background thread."""
+    try:
+        from src.agents.data_collection import DataCollectionAgent
+        
+        agent = DataCollectionAgent()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        is_ready = loop.run_until_complete(agent.initialize())
+        if is_ready:
+            loop.run_until_complete(agent.collect_all())
+            loop.run_until_complete(agent.shutdown())
+            logger.info("✅ Data Collection Agent completed successfully")
+        else:
+            logger.error("❌ Agent initialization failed")
+    except Exception as e:
+        logger.error(f"❌ Error in Data Collection Agent: {e}")
+    finally:
+        try:
+            loop.close()
+        except:
+            pass
 
 
 def register_callbacks(app):
@@ -150,7 +178,7 @@ def register_callbacks(app):
             html.H3("🎮 Controls", style={'color': '#ffffff', 'margin-bottom': '1rem'}),
             html.Div([
                 html.Button(
-                    "▶️ START",
+                    "▶️ START BOT",
                     id='start-btn',
                     n_clicks=0,
                     style={
@@ -166,7 +194,7 @@ def register_callbacks(app):
                     }
                 ),
                 html.Button(
-                    "⏹️ STOP",
+                    "⏹️ STOP BOT",
                     id='stop-btn',
                     n_clicks=0,
                     style={
@@ -190,3 +218,31 @@ def register_callbacks(app):
                 html.P("Stop Loss: 2%", style={'color': 'rgba(255, 255, 255, 0.7)'}),
             ])
         ])
+    
+    @app.callback(
+        Output('status-message', 'children'),
+        Input('start-btn', 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def start_agent(n_clicks):
+        """Incepe agentul când se apasă START."""
+        if n_clicks and n_clicks > 0:
+            logger.info("🚀 Starting Agent 1...")
+            thread = threading.Thread(target=run_agent_in_thread, daemon=True)
+            thread.start()
+            return html.Div("✅ Agent 1 started! Check logs for progress.", 
+                          style={'color': '#28a745', 'padding': '1rem', 'background': 'rgba(40, 167, 69, 0.2)', 'border-radius': '5px'})
+        return html.Div()
+    
+    @app.callback(
+        Output('status-message', 'children', allow_duplicate=True),
+        Input('stop-btn', 'n_clicks'),
+        prevent_initial_call=True
+    )
+    def stop_agent(n_clicks):
+        """Oprește agentul când se apasă STOP."""
+        if n_clicks and n_clicks > 0:
+            logger.info("⏹️ Agent stopped by user")
+            return html.Div("⏹️ Agent stopped.", 
+                          style={'color': '#ffc107', 'padding': '1rem', 'background': 'rgba(255, 193, 7, 0.2)', 'border-radius': '5px'})
+        return html.Div()
