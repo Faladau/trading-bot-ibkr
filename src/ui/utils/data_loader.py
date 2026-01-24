@@ -58,13 +58,15 @@ def load_config() -> dict:
         }
 
 
-def get_latest_market_data(symbols: List[str], data_dir: str = "data/processed") -> pd.DataFrame:
+def get_latest_market_data(symbols: List[str], data_dir: str = "data/market_data") -> pd.DataFrame:
     """Citește ultimele date de piață din CSV."""
     data = []
     
     possible_dirs = [
         Path(data_dir),
+        Path("data/market_data"),
         Path("data/processed"),
+        Path(__file__).parent.parent.parent.parent / "data" / "market_data",
         Path(__file__).parent.parent.parent.parent / "data" / "processed",
     ]
     
