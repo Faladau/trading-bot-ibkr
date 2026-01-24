@@ -196,51 +196,57 @@ def main():
     
     st.divider()
     
-    # Bottom: Controls + Activity Log
-    col_controls, col_logs = st.columns(2)
+    # Bottom: Controls + Activity Log (4 coloane pentru butoane)
+    st.subheader("🎮 Controls")
+    col_start, col_stop, col_refresh, col_empty = st.columns(4)
     
-    # Controls
-    with col_controls:
-        st.subheader("🎮 Controls")
-        
-        col_start, col_stop = st.columns(2)
-        with col_start:
-            if st.button("▶️ START", type="primary", use_container_width=True):
-                st.session_state.bot_running = True
-                st.session_state.agent_status['agent1'] = 'ACTIVE'
-                st.success("Bot started!")
-                
-                # Rulează Agent 1 în background thread
-                thread = threading.Thread(target=run_data_collection_agent_thread, daemon=True)
-                thread.start()
-                st.rerun()
-        
-        with col_stop:
-            if st.button("⏹️ STOP", type="secondary", use_container_width=True):
-                st.session_state.bot_running = False
-                st.session_state.agent_status = {
-                    'agent1': 'IDLE',
-                    'agent2': 'IDLE',
-                    'agent3': 'IDLE'
-                }
-                st.warning("Bot stopped!")
-                st.rerun()
-        
-        st.divider()
-        
-        # Configuration Display
+    with col_start:
+        if st.button("▶️ START", type="primary", use_container_width=True):
+            st.session_state.bot_running = True
+            st.session_state.agent_status['agent1'] = 'ACTIVE'
+            st.success("Bot started!")
+            
+            thread = threading.Thread(target=run_data_collection_agent_thread, daemon=True)
+            thread.start()
+            st.rerun()
+    
+    with col_stop:
+        if st.button("⏹️ STOP", type="secondary", use_container_width=True):
+            st.session_state.bot_running = False
+            st.session_state.agent_status = {
+                'agent1': 'IDLE',
+                'agent2': 'IDLE',
+                'agent3': 'IDLE'
+            }
+            st.warning("Bot stopped!")
+            st.rerun()
+    
+    with col_refresh:
+        if st.button("🔄 Refresh", use_container_width=True):
+            st.rerun()
+    
+    st.divider()
+    
+    # Layout: Controls (left) + Activity Log (right)
+    col_config, col_activity = st.columns(2)
+    
+    with col_config:
         st.caption("**⚙️ Configuration**")
         app_config = config.get('app', {})
         st.text(f"Mode: {app_config.get('mode', 'paper').upper()}")
         st.text(f"Risk Level: Medium")
         st.text(f"Max Position: $50k")
         st.text(f"Stop Loss: 2%")
+        
+        auto_refresh = st.checkbox("🔄 Auto-refresh (60s)", value=False)
+        if auto_refresh:
+            import time
+            time.sleep(60)
+            st.rerun()
     
-    # Activity Log
-    with col_logs:
+    with col_activity:
         st.subheader("📋 Recent Activity")
         
-        # Simulare logs
         logs = [
             {"time": "14:32:15", "agent": "Agent 1", "message": "Data collection completed"},
             {"time": "14:30:42", "agent": "Agent 3", "message": "Market scan completed"},
@@ -249,7 +255,6 @@ def main():
             {"time": "14:22:18", "agent": "System", "message": "All agents initialized"},
         ]
         
-        # Adaugă logs reale dacă există
         from pathlib import Path
         signals_path = Path("data/signals")
         if signals_path.exists():
@@ -269,22 +274,8 @@ def main():
                 except Exception:
                     pass
         
-        # Display logs
         for log in logs[:10]:
             st.text(f"**{log['time']}**: {log['agent']}: {log['message']}")
-    
-    # Refresh opțional
-    st.divider()
-    col_refresh, _ = st.columns([1, 3])
-    with col_refresh:
-        if st.button("🔄 Refresh Data", use_container_width=True):
-            st.rerun()
-        
-        auto_refresh = st.checkbox("🔄 Auto-refresh (60s)", value=False)
-        if auto_refresh:
-            import time
-            time.sleep(60)
-            st.rerun()
 
 
 if __name__ == "__main__":
