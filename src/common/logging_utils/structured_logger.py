@@ -73,7 +73,7 @@ def configure_logging(log_level: str = "INFO"):
     
     # Get root logger
     logger = logging.getLogger()
-    logger.setLevel(getattr(logging, log_level))
+    logger.setLevel(logging.WARNING)  # Root = WARNING to suppress library noise
     
     # Remove existing handlers to avoid duplicates
     for handler in logger.handlers[:]:
@@ -87,15 +87,19 @@ def configure_logging(log_level: str = "INFO"):
     
     # Console handler
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(getattr(logging, log_level))
+    console_handler.setLevel(logging.INFO)  # Console shows INFO and above
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
     
     # SQLite handler
     sqlite_handler = SQLiteLogHandler()
-    sqlite_handler.setLevel(getattr(logging, log_level))
+    sqlite_handler.setLevel(logging.INFO)  # DB shows INFO and above
     sqlite_handler.setFormatter(console_formatter)
     logger.addHandler(sqlite_handler)
+    
+    # Set our application loggers to INFO level
+    for module in ['src.ui', 'src.agents', 'src.broker', 'src.strategy', 'src.risk']:
+        logging.getLogger(module).setLevel(logging.INFO)
 
 
 def get_logs_from_db(limit: int = 100, level_filter: Optional[str] = None) -> list:
