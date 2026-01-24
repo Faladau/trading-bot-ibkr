@@ -22,6 +22,7 @@ def run_agent_in_thread():
     """Rulează agentul în background thread."""
     try:
         from src.agents.data_collection import DataCollectionAgent
+        from pathlib import Path
         
         agent = DataCollectionAgent()
         loop = asyncio.new_event_loop()
@@ -33,7 +34,9 @@ def run_agent_in_thread():
             loop.run_until_complete(agent.shutdown())
             logger.info("✅ Data Collection Agent completed successfully")
         else:
-            logger.error("❌ Agent initialization failed")
+            logger.error("❌ Agent initialization failed - could not connect to data sources")
+    except FileNotFoundError as e:
+        logger.error(f"❌ Config file not found: {e}")
     except Exception as e:
         logger.error(f"❌ Error in Data Collection Agent: {e}")
     finally:
