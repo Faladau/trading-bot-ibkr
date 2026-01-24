@@ -2,7 +2,7 @@
 Dashboard Callbacks - Callbacks pentru interactivitate Dash
 """
 
-from dash import Input, Output, State, html, callback_context
+from dash import Input, Output, State, html, dcc, callback_context
 from datetime import datetime
 import asyncio
 import threading
@@ -249,3 +249,45 @@ def register_callbacks(app):
             return html.Div("⏹️ Agent stopped.", 
                           style={'color': '#ffc107', 'padding': '1rem', 'background': 'rgba(255, 193, 7, 0.2)', 'border-radius': '5px'})
         return html.Div()
+    
+    @app.callback(
+        Output('logs-container', 'children'),
+        [
+            Input('interval-component', 'n_intervals'),
+            Input('logs-level-filter', 'value')
+        ]
+    )
+    def update_logs(n_intervals, level_filter):
+        """Actualiza logs viewer din baza de date."""
+        from src.common.logging_utils.structured_logger import get_logs_from_db
+        
+        try:
+            logs = get_logs_from_db(limit=50, level_filter=level_filter)
+            
+            if not logs:
+                return html.Div("No logs yet...", style={'color': 'rgba(255, 255, 255, 0.5)'})
+            
+            log_lines = []
+            for log in logs:
+                # Color based on level
+                level_color = {
+                    'ERROR': '#ff6b6b',
+                    'WARNING': '#ffd43b',
+                    'INFO': '#74c0fc',
+                    'DEBUG': '#a8e6cf'
+                }.get(log.get('level', 'INFO'), '#ffffff')
+                
+                timestamp = log.get('timestamp', '')[:19]  # Format: YYYY-MM-DD HH:MM:SS
+                level = log.get('level', 'INFO')
+                module = log.get('module', 'unknown')
+                message = log.get('message', '')
+                
+                log_line = f"[{timestamp}] {level:8} | {module:30} | {message}"
+                
+                log_lines.append(
+                    html.Div(log_line, style={'color': level_color, 'padding': '0.3rem 0', 'white-space': 'pre-wrap'})
+                )
+            
+            return log_lines
+        except Exception as e:
+            return html.Div(f"Error loading logs: {e}", style={'color': '#ff6b6b'})

@@ -142,6 +142,43 @@ app.layout = html.Div([
         # Status message
         html.Div(id='status-message', style={'position': 'relative', 'z-index': 10, 'margin-top': '1rem'}),
         
+        html.Hr(style={'border-color': 'rgba(255, 255, 255, 0.2)', 'margin': '2rem 0'}),
+        
+        # Logs Viewer
+        html.Div([
+            html.H3("🔍 Live Logs", style={'color': '#ffffff', 'margin-bottom': '1rem'}),
+            html.Div([
+                html.Label("Filter by level:", style={'color': 'rgba(255, 255, 255, 0.7)', 'margin-right': '0.5rem'}),
+                dcc.Dropdown(
+                    id='logs-level-filter',
+                    options=[
+                        {'label': '📊 All', 'value': None},
+                        {'label': '🔵 INFO', 'value': 'INFO'},
+                        {'label': '⚠️ WARNING', 'value': 'WARNING'},
+                        {'label': '🔴 ERROR', 'value': 'ERROR'},
+                        {'label': '🐛 DEBUG', 'value': 'DEBUG'},
+                    ],
+                    value=None,
+                    style={'minWidth': '150px', 'color': '#000000'},
+                    clearable=False
+                )
+            ], style={'display': 'flex', 'gap': '1rem', 'margin-bottom': '1rem', 'align-items': 'center'}),
+            html.Div(
+                id='logs-container',
+                style={
+                    'background': 'rgba(0, 0, 0, 0.3)',
+                    'border': '1px solid rgba(102, 126, 234, 0.3)',
+                    'border-radius': '10px',
+                    'padding': '1rem',
+                    'height': '300px',
+                    'overflow-y': 'auto',
+                    'font-family': 'monospace',
+                    'font-size': '0.85rem',
+                    'color': '#e0e0e0'
+                }
+            )
+        ], style={'position': 'relative', 'z-index': 10}),
+        
         # Refresh button
         html.Div([
             html.Button(

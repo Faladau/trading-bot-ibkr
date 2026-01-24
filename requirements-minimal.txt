@@ -1,0 +1,10 @@
+dash==2.14.0
+plotly>=5.18.0
+pandas>=2.0.0
+numpy>=1.26.0
+pyyaml>=6.0.1
+python-dotenv>=1.0.0
+streamlit>=1.28.1
+yfinance==0.2.32
+structlog>=24.1.0
+
