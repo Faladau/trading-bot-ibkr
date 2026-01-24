@@ -16,7 +16,7 @@ from datetime import datetime
 import asyncio
 
 # Import componente și utilități
-from src.ui.utils.css_loader import load_css
+from src.ui.utils.css_loader import load_all_css
 from src.ui.utils.data_loader import load_config, get_latest_market_data, get_recent_trades, calculate_metrics
 from src.ui.components.agent_status import render_agent_status_row
 from src.ui.components.metrics import render_metrics
@@ -28,72 +28,13 @@ st.set_page_config(
     page_title="Trading Bot v6.2 Dashboard",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Încarcă CSS-ul din fișier separat (trebuie să fie primul)
-load_css()
-
-# CSS suplimentar inline pentru a forța layout-ul după refresh
-# Folosim multiple selectori și !important pentru a suprascrie Streamlit
-st.markdown("""
-<style>
-    /* Force layout 80% - aplicat după load_css pentru a suprascrie */
-    section[data-testid="stAppViewContainer"] {
-        max-width: 80% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding: 2rem !important;
-        width: 80% !important;
-    }
-    .main .block-container {
-        max-width: 80% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding: 2rem !important;
-        width: 80% !important;
-    }
-    /* Force pentru Streamlit wide layout - multiple selectori */
-    .stApp > div:first-child > div:first-child {
-        max-width: 80% !important;
-        margin: 0 auto !important;
-        width: 80% !important;
-    }
-    /* Override pentru toate containerele principale */
-    .main {
-        max-width: 80% !important;
-        margin: 0 auto !important;
-    }
-    /* Force pentru elementele Streamlit care pot suprascrie */
-    [data-testid="stAppViewContainer"] > div {
-        max-width: 80% !important;
-        margin: 0 auto !important;
-    }
-</style>
-<script>
-    // Force layout 80% după ce pagina se încarcă complet
-    function forceLayout80() {
-        const containers = document.querySelectorAll('section[data-testid="stAppViewContainer"], .main .block-container');
-        containers.forEach(container => {
-            container.style.maxWidth = '80%';
-            container.style.marginLeft = 'auto';
-            container.style.marginRight = 'auto';
-            container.style.padding = '2rem';
-        });
-    }
-    // Rulează imediat și după ce DOM-ul se încarcă
-    forceLayout80();
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', forceLayout80);
-    } else {
-        forceLayout80();
-    }
-    // Rulează și după un mic delay pentru a acoperi cazurile când Streamlit aplică stilurile mai târziu
-    setTimeout(forceLayout80, 100);
-    setTimeout(forceLayout80, 500);
-    setTimeout(forceLayout80, 1000);
-</script>
-""", unsafe_allow_html=True)
+# ==================== CSS LOADING - BEST PRACTICE ====================
+# Încarcă TOATE fișierele CSS din src/ui/static/css/
+# CSS-ul e separat, portabil, reusabil - nu depinde de Streamlit
+load_all_css()
 
 
 class DashboardState:
@@ -184,41 +125,6 @@ def main():
     """Funcție principală dashboard."""
     state = DashboardState()
     config = load_config()
-    
-    # Background simplu dark, fără mov + text alb forțat + layout 80%
-    st.markdown("""
-    <style>
-    .stApp {
-        background: #1a1a2e !important;
-        color: #ffffff !important;
-    }
-    .stApp * {
-        color: #ffffff !important;
-    }
-    /* Force 80% width pentru container principal - IMPORTANT pentru refresh */
-    section[data-testid="stAppViewContainer"] {
-        max-width: 80% !important;
-        margin: 0 auto !important;
-        padding: 2rem !important;
-    }
-    .main .block-container {
-        max-width: 80% !important;
-        margin: 0 auto !important;
-        padding: 2rem !important;
-    }
-    /* Force white text pentru toate elementele Streamlit */
-    [data-testid="stMetricLabel"],
-    [data-testid="stMetricValue"],
-    [data-testid="stMetricDelta"],
-    .stApp h1, .stApp h2, .stApp h3, .stApp h4,
-    .stApp p, .stApp div, .stApp span, .stApp label {
-        color: #ffffff !important;
-    }
-    .stApp .stCaption {
-        color: rgba(255, 255, 255, 0.9) !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
     
     # Container principal pe 80% din pagină
     with st.container():
