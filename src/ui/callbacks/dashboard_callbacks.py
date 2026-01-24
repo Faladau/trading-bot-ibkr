@@ -6,6 +6,7 @@ from dash import Input, Output, State, html, dcc, callback_context
 from datetime import datetime
 import asyncio
 import threading
+import logging
 from src.ui.utils.data_loader import load_config, get_latest_market_data, get_recent_trades, calculate_metrics
 from src.ui.components.dash_components import (
     render_agent_status_row,
@@ -13,9 +14,9 @@ from src.ui.components.dash_components import (
     render_watchlist_dash,
     render_equity_curve_chart
 )
-from src.common.logging_utils.logger import get_logger
+from src.common.logging_utils import get_logs_from_db
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def run_agent_in_thread():
@@ -259,7 +260,6 @@ def register_callbacks(app):
     )
     def update_logs(n_intervals, level_filter):
         """Actualiza logs viewer din baza de date."""
-        from src.common.logging_utils.structured_logger import get_logs_from_db
         
         try:
             logs = get_logs_from_db(limit=50, level_filter=level_filter)

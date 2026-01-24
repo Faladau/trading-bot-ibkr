@@ -196,12 +196,12 @@ def main():
     
     st.divider()
     
-    # Bottom: Controls + Activity Log (4 coloane pentru butoane)
+    # Bottom: Controls + Activity Log (3 coloane pentru butoane - mai mari)
     st.subheader("🎮 Controls")
-    col_start, col_stop, col_refresh, col_empty = st.columns(4)
+    col_start, col_stop, col_refresh = st.columns(3)
     
     with col_start:
-        if st.button("▶️ START", type="primary", use_container_width=True):
+        if st.button("▶️ START BOT", type="primary", use_container_width=True, key="btn_start"):
             st.session_state.bot_running = True
             st.session_state.agent_status['agent1'] = 'ACTIVE'
             st.success("Bot started!")
@@ -211,7 +211,7 @@ def main():
             st.rerun()
     
     with col_stop:
-        if st.button("⏹️ STOP", type="secondary", use_container_width=True):
+        if st.button("⏹️ STOP BOT", type="secondary", use_container_width=True, key="btn_stop"):
             st.session_state.bot_running = False
             st.session_state.agent_status = {
                 'agent1': 'IDLE',
@@ -222,7 +222,7 @@ def main():
             st.rerun()
     
     with col_refresh:
-        if st.button("🔄 Refresh", use_container_width=True):
+        if st.button("🔄 REFRESH", use_container_width=True, key="btn_refresh"):
             st.rerun()
     
     st.divider()

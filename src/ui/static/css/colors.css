@@ -1,0 +1,23 @@
+/* TEME CULORI - Best Practice: Culori separate, reusabile */
+
+.stApp {
+    background: #1a1a2e !important;
+    color: #ffffff !important;
+}
+
+.stApp * {
+    color: #ffffff !important;
+}
+
+/* Force white text pentru toate elementele */
+[data-testid="stMetricLabel"],
+[data-testid="stMetricValue"],
+[data-testid="stMetricDelta"],
+.stApp h1, .stApp h2, .stApp h3, .stApp h4,
+.stApp p, .stApp div, .stApp span, .stApp label {
+    color: #ffffff !important;
+}
+
+.stApp .stCaption {
+    color: rgba(255, 255, 255, 0.9) !important;
+}

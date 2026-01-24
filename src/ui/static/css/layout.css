@@ -1,0 +1,24 @@
+/* LAYOUT FORCE 90% - Best Practice: CSS separat, portabil, reusabil */
+
+/* Selectori noi Streamlit 1.40+ */
+section[data-testid="stAppViewContainer"] {
+    max-width: 90% !important;
+    width: 90% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Backup selectori pentru versiuni mai vechi */
+.main .block-container {
+    max-width: 90% !important;
+    width: 90% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Forță 90% pentru div-ul principal */
+.stApp > div:first-child > div:first-child > div:first-child {
+    max-width: 90% !important;
+    width: 90% !important;
+    margin: 0 auto !important;
+}
