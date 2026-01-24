@@ -13,7 +13,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime
-import asyncio
+import threading
 
 # Import componente și utilități
 from src.ui.utils.css_loader import load_all_css
@@ -22,6 +22,9 @@ from src.ui.components.agent_status import render_agent_status_row
 from src.ui.components.metrics import render_metrics
 from src.ui.components.watchlist import render_watchlist
 from src.agents.data_collection import DataCollectionAgent
+from src.common.logging_utils import get_logger
+
+logger = get_logger(__name__)
 
 # Configure page
 st.set_page_config(
@@ -53,18 +56,34 @@ class DashboardState:
             }
 
 
-async def run_data_collection_agent():
-    """Rulează Data Collection Agent în background."""
+def run_data_collection_agent_thread():
+    """Rulează Data Collection Agent în background thread."""
+    import asyncio
+    
     try:
         agent = DataCollectionAgent()
-        if await agent.initialize():
-            await agent.collect_all()
-            await agent.shutdown()
+        
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        is_ready = loop.run_until_complete(agent.initialize())
+        if is_ready:
+            loop.run_until_complete(agent.collect_all())
+            loop.run_until_complete(agent.shutdown())
             st.session_state.agent_status['agent1'] = 'IDLE'
             st.session_state.last_update = datetime.now()
+            logger.info("✅ Data Collection Agent completed successfully")
+        else:
+            st.session_state.agent_status['agent1'] = 'ERROR'
+            logger.error("❌ Agent initialization failed")
     except Exception as e:
-        st.error(f"Eroare la rulare Agent 1: {e}")
+        logger.error(f"❌ Error in Data Collection Agent: {e}")
         st.session_state.agent_status['agent1'] = 'ERROR'
+    finally:
+        try:
+            loop.close()
+        except:
+            pass
 
 
 def render_equity_curve_chart(trades: list) -> None:
@@ -191,8 +210,9 @@ def main():
                 st.session_state.agent_status['agent1'] = 'ACTIVE'
                 st.success("Bot started!")
                 
-                # Rulează Agent 1 în background
-                asyncio.create_task(run_data_collection_agent())
+                # Rulează Agent 1 în background thread
+                thread = threading.Thread(target=run_data_collection_agent_thread, daemon=True)
+                thread.start()
                 st.rerun()
         
         with col_stop:
