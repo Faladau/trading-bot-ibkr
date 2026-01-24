@@ -148,7 +148,7 @@ app.layout = html.Div([
         html.Div([
             html.H3("🔍 Live Logs", style={'color': '#ffffff', 'margin-bottom': '1rem'}),
             html.Div([
-                html.Label("Filter by level:", style={'color': 'rgba(255, 255, 255, 0.7)', 'margin-right': '0.5rem'}),
+                html.Label("Filter by level:", style={'color': 'rgba(255, 255, 255, 0.7)', 'margin-right': '0.5rem', 'min-width': '100px'}),
                 dcc.Dropdown(
                     id='logs-level-filter',
                     options=[
@@ -159,7 +159,14 @@ app.layout = html.Div([
                         {'label': '🐛 DEBUG', 'value': 'DEBUG'},
                     ],
                     value=None,
-                    style={'minWidth': '150px', 'color': '#000000'},
+                    style={
+                        'minWidth': '200px',
+                        'color': '#ffffff',
+                        'backgroundColor': '#1a1a2e',
+                        'borderRadius': '5px',
+                        'border': '1px solid rgba(102, 126, 234, 0.5)',
+                        'zIndex': 1000
+                    },
                     clearable=False
                 )
             ], style={'display': 'flex', 'gap': '1rem', 'margin-bottom': '1rem', 'align-items': 'center'}),
