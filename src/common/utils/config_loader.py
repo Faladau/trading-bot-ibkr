@@ -20,9 +20,15 @@ class ConfigLoader:
             config_dir: Directorul cu fișierele de config (default: config/)
         """
         if config_dir is None:
-            # Caută config/ relativ la root-ul proiectului
-            project_root = Path(__file__).parent.parent.parent
-            config_dir = project_root / "config"
+            # Caută config/ relativ la working directory (mai fiabil în threads)
+            import os
+            cwd = Path(os.getcwd())
+            config_dir = cwd / "config"
+            
+            # Fallback dacă nu e în cwd
+            if not config_dir.exists():
+                project_root = Path(__file__).parent.parent.parent
+                config_dir = project_root / "config"
         
         self.config_dir = Path(config_dir)
         self._config: Dict[str, Any] = {}
